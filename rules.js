@@ -16,7 +16,10 @@ exports.roles = [
 
 let game = null
 
-
+function logbr() {
+	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
+		game.log.push("")
+}
 // SETUP
 
 exports.setup = function (seed, scenario, options) {
@@ -27,6 +30,8 @@ exports.setup = function (seed, scenario, options) {
 	}
     // TODO тут надо накрутить обработку сценариев. 
     
+	game.state = 'new_game'
+
 
 	// start_campaign()
 	logbr()
