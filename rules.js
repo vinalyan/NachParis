@@ -18,12 +18,7 @@ exports.roles = [
 exports.setup = function (seed, scenario, options) {
 	game = {
 		seed: seed,
-		log: [],
-		undo: [],
-
-		state: null,
-		active: null,
-		GT: 0,
+		GT: 0
 
 	}
     // TODO тут надо накрутить обработку сценариев. 
