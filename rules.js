@@ -1,7 +1,7 @@
 "use strict"
 
 exports.scenarios = [
-	"SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE",
+	"1",
     "SCENARIO Nº2 - ASSAULT ON LIEGE",
     "SCENARIO Nº3 - STRONG ATTACK ON NAMUR",
     "SCENARIO Nº4 - AROUND THE MARSHES OF SAINT-GOND",
@@ -28,7 +28,7 @@ exports.setup = function (seed, scenario, options) {
 	}
     // TODO тут надо накрутить обработку сценариев. 
     
-    if (scenario === "SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE")
+    if (scenario === "1")
 		setup_game()
 	else
 		throw new Error("Unknown scenario:", scenario)
