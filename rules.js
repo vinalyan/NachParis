@@ -1,7 +1,11 @@
 "use strict"
 
 exports.scenarios = [
-	// TODO: Добавить сценарии?
+	"SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE",
+    "SCENARIO Nº2 - ASSAULT ON LIEGE",
+    "SCENARIO Nº3 - STRONG ATTACK ON NAMUR",
+    "SCENARIO Nº4 - AROUND THE MARSHES OF SAINT-GOND",
+    "SCENARIO Nº5 - THE SIEGE OF FORTRESS MAUBEUGE",
 ]
 
 exports.roles = [
