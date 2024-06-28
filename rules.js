@@ -29,6 +29,11 @@ exports.setup = function (seed, scenario, options) {
     
 
 	// start_campaign()
-    
+	logbr()
+	log(".h1 " + scenario)
+	logbr()
+
+	//start_campaign()
 	return game
 }
+
