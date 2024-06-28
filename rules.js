@@ -23,6 +23,7 @@ exports.setup = function (seed, scenario, options) {
 	game = {
 		seed: seed,
 		GT: 0,
+		state: null,
 	}
     // TODO тут надо накрутить обработку сценариев. 
     
