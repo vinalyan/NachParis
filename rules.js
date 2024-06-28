@@ -27,21 +27,17 @@ exports.setup = function (seed, scenario, options) {
 
 	}
     // TODO тут надо накрутить обработку сценариев. 
-    /*
+    
     if (scenario === "SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE")
 		setup_game()
-	else if (scenario === "Kingmaker")
-		setup_kingmaker()
-	else if (scenario === "Richard III")
-		setup_richard_iii()
 	else
 		throw new Error("Unknown scenario:", scenario)
 
-	logbr()
-	log(".h1 " + scenario)
-	logbr()
-
-	start_campaign()
-    */
+	// start_campaign()
+    
 	return game
+}
+
+function setup_game() {
+    throw new Error("Завелось:", scenario)
 }
