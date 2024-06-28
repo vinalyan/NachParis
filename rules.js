@@ -22,21 +22,12 @@ let game = null
 exports.setup = function (seed, scenario, options) {
 	game = {
 		seed: seed,
-		GT: 0
-
+		GT: 0,
 	}
     // TODO тут надо накрутить обработку сценариев. 
     
-    if (scenario === "1")
-		setup_game()
-	else
-		throw new Error("Unknown scenario:", scenario)
 
 	// start_campaign()
     
 	return game
-}
-
-function setup_game() {
-    throw new Error("Завелось:", scenario)
 }
