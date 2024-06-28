@@ -32,12 +32,6 @@ exports.setup = function (seed, scenario, options) {
     
 	game.state = 'new_game'
 
-
-	// start_campaign()
-	logbr()
-	log(".h1 " + scenario)
-	logbr()
-
 	//start_campaign()
 	return game
 }
