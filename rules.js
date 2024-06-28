@@ -34,6 +34,17 @@ exports.setup = function (seed, scenario, options) {
 
 	console.log('Game_state: ' + game.state)
 	//start_campaign()
+	logbr()
+	log("новая игра")
 	return game
+}
+
+function logbr() {
+	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
+		game.log.push("")
+}
+
+function log(s) {
+	game.log.push(s)
 }
 
