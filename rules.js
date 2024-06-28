@@ -27,15 +27,17 @@ exports.setup = function (seed, scenario, options) {
 		seed: seed,
 		GT: 0,
 		state: null,
+		log: [],
+		undo: [],
 	}
     // TODO тут надо накрутить обработку сценариев. 
     
 	game.state = 'new_game'
 
-	console.log('Game_state: ' + game.state)
 	//start_campaign()
 	logbr()
 	log("новая игра")
+	console.log('exports.setup прошли: ')
 	return game
 }
 
