@@ -1,3 +1,10 @@
+main { background-color: dimgray; }
+#roles { background-color: silver; }
+header { background-color: silver; }
+header.your_turn { background-color: orange; }
+#role_German { background-color: darkseagreen; }
+#role_Allied { background-color: tan; }
+
 #mapwrap {
 	width: 1000px;
 	height: 1275px;
