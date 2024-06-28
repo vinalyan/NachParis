@@ -1,5 +1,6 @@
 "use strict"
 
+
 exports.scenarios = [
 	"1",
     "SCENARIO Nº2 - ASSAULT ON LIEGE",
@@ -12,6 +13,9 @@ exports.roles = [
 	"German",
 	"Allies",
 ]
+
+let game = null
+
 
 // SETUP
 
