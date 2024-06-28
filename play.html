@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- vim:set nowrap: -->
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover">
+<meta name="theme-color" content="#444">
+<meta charset="utf-8">
+<title>1914: Nach Paris</title>
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/common/client.css">
+<link rel="stylesheet" href="play.css">
+<script defer src="/common/client.js"></script>
+<script defer src="data.js"></script>
+<script defer src="play.js"></script>
+</head>
+
+<body>
+    <header>
+        <div id="toolbar">
+            <details>
+                <summary><img src="/images/cog.svg"></summary>
+                <menu>
+                    <li><a href="info/rules.html" target="_blank">Rules</a>
+                    <li><a href="info/units.html" target="_blank">Units</a>
+                </menu>
+            </details>
+            <button onclick="toggle_supply()"><img src="/images/oil-drum.svg"></button>
+            <button onclick="toggle_units()"><img src="/images/earth-africa-europe.svg"></button>
+        </div>
+    </header>
+
+    <aside>
+        <div id="roles">
+            <div class="role" id="role_German">
+                <div class="role_name">German</div>
+                <div class="role_stat" id="german_supply">0</div>
+                <div class="role_user">-</div>
+            </div>
+            <div class="role" id="role_Allied">
+                <div class="role_name">Allied</div>
+                <div class="role_stat" id="allied_supply">0</div>
+                <div class="role_user">-</div>
+            </div>
+        </div>
+        <div id="log"></div>
+    </aside>
+
+    <div id="map" style="background-image:url('map1.jpg');width:765.0pt;height:990.0pt">
+
+</body>

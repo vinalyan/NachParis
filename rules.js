@@ -11,7 +11,7 @@ exports.scenarios = [
 
 exports.roles = [
 	"German",
-	"Allies",
+	"Allied",
 ]
 
 let game = null
