@@ -1,0 +1,20 @@
+#mapwrap {
+	width: 1000px;
+	height: 1275px;
+}
+
+#map {
+	width: 1000px;
+	height: 1275px;
+	background-size: cover;
+}
+
+#map { background-image: url("map1.jpg") }
+@media (min-resolution: 97dpi) {
+	#map { background-image: url("map1.jpg") }
+}
+
+#mapsvg {
+	display: block;
+	position: absolute;
+}
