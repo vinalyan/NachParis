@@ -23,24 +23,8 @@ exports.setup = function (seed, scenario, options) {
 
 		state: null,
 		active: null,
-		turn: 0,
-		moves: 0,
-		who: NOBODY,
-		where: NOWHERE,
+		GT: 0,
 
-		show_cards: false,
-		killed_heirs: { Allies: 0, German: 0 },
-
-		location: [],
-		steps: [],
-		moved: [],
-		dead: [],
-		reserves: [],
-
-		attacker: {},
-		border_limit: [],
-		last_used: [],
-		main_border: [],
 	}
     // TODO тут надо накрутить обработку сценариев. 
     /*
