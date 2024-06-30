@@ -1,27 +1,28 @@
 main { background-color: dimgray; }
-#roles { background-color: silver; }
-header { background-color: silver; }
-header.your_turn { background-color: orange; }
-#role_German { background-color: darkseagreen; }
-#role_Allied { background-color: tan; }
 
-#mapwrap {
-	width: 2265px;
-	height: 3204px;
+
+/*
+#map {
+	background-image: url("map1.jpg");
+	background-size: 1132.5px 1602px;
+	width: 1132.5px;
+	height: 1602px;
+
 }
+*/
 
 #map {
-	width: 2265px;
-	height: 3204px;
-	background-size: cover;
+	position: absolute;
+	text-align: center;
 }
 
-#map { background-image: url("map1.jpg") }
-@media (min-resolution: 97dpi) {
-	#map { background-image: url("map1.jpg") }
-}
+
 
 #mapsvg {
 	display: block;
 	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
 }

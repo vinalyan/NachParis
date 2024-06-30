@@ -3,54 +3,26 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover">
-<meta name="theme-color" content="#444">
+
 <meta charset="utf-8">
 <title>1914: Nach Paris</title>
-<link rel="icon" href="favicon.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/common/client.css">
 <link rel="stylesheet" href="play.css">
-<script defer src="/common/client.js"></script>
 <script defer src="data.js"></script>
 <script defer src="play.js"></script>
 </head>
 
 <body>
-    <header>
-        <div id="toolbar">
-            <details>
-                <summary><img src="/images/cog.svg"></summary>
-                <menu>
-                    <li><a href="info/rules.html" target="_blank">Rules</a>
-                    <li><a href="info/units.html" target="_blank">Units</a>
-                </menu>
-            </details>
-            <button onclick="toggle_supply()"><img src="/images/oil-drum.svg"></button>
-            <button onclick="toggle_units()"><img src="/images/earth-africa-europe.svg"></button>
-        </div>
-    </header>
-
-    <aside>
-        <div id="roles">
-            <div class="role" id="role_German">
-                <div class="role_name">German</div>
-                <div class="role_stat" id="german_supply">0</div>
-                <div class="role_user">-</div>
-            </div>
-            <div class="role" id="role_Allied">
-                <div class="role_name">Allied</div>
-                <div class="role_stat" id="allied_supply">0</div>
-                <div class="role_user">-</div>
-            </div>
-        </div>
-        <div id="log"></div>
-    </aside>
-
     <main data-min-zoom="1" data-max-zoom="2">
         <div id="mapwrap">
-            <div id="map">
+            <div id="map">   
+                <img src="map1.jpg" alt="">        
+                <svg id="mapsvg" viewBox = "0 0 2265 3204">
+                    <path class="workSpace" d="m 266.58024,2736.0826 -70.28025,-126.0197 72.70371,-113.9025 142.98394,-4.8469 72.7037,123.5963 -70.28024,128.4432
+                    z">
+                    <g id="hexes" fill="transparent" stroke="transparent"></g>
+            </svg>
             </div>
-        </div>
+        </div> 
     </main>
 
 </body>
