@@ -6,13 +6,13 @@ header.your_turn { background-color: orange; }
 #role_Allied { background-color: tan; }
 
 #mapwrap {
-	width: 1000px;
-	height: 1275px;
+	width: 2265px;
+	height: 3204px;
 }
 
 #map {
-	width: 1000px;
-	height: 1275px;
+	width: 2265px;
+	height: 3204px;
 	background-size: cover;
 }
 
