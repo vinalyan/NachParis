@@ -25,4 +25,20 @@ main { background-color: dimgray; }
 	left: 0;
 	height: 100%;
 	width: 100%;
+	width: 2265px;
+	height: 3204px;
+
+}
+
+/* координаты пикселей около курсовар
+TODO убрать когда отлажусь.
+*/
+
+#coords {
+	position: fixed;
+	background: rgba(0, 0, 0, 0.7);
+	color: white;
+	padding: 5px;
+	border-radius: 5px;
+	pointer-events: none; /* Чтобы элемент не мешал кликам мыши */
 }

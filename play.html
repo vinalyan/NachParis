@@ -10,16 +10,16 @@
 <script defer src="data.js"></script>
 <script defer src="play.js"></script>
 </head>
-
 <body>
+    <div id="cursor-position"></div>
+    <div id="coords">X: 0, Y: 0</div>
     <main data-min-zoom="1" data-max-zoom="2">
         <div id="mapwrap">
             <div id="map">   
                 <img src="map1.jpg" alt="">        
-                <svg id="mapsvg" viewBox = "0 0 2265 3204">
-                    <path class="workSpace" d="m 266.58024,2736.0826 -70.28025,-126.0197 72.70371,-113.9025 142.98394,-4.8469 72.7037,123.5963 -70.28024,128.4432
-                    z">
-                    <g id="hexes" fill="transparent" stroke="transparent"></g>
+                <svg id="mapsvg">
+                    <g id="hexes" fill="transparent" stroke="blue"></g>
+
             </svg>
             </div>
         </div> 

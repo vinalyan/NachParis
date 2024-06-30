@@ -14,68 +14,81 @@ let ui = {
 	hex_y: [],
 }
 
-
-function is_map_hex(x) {
-	return x < hex_exists.length && hex_exists[x] === 1
-}
-// visible map width = 22 hexes: el agheila -> alexandria
-// visible map height = 9 hexes: oasis to derne
-
-const map_w = 3
-const map_h = 3
-const hexmonth = map_w * map_h
+// количество вертрикальных гексов
+const map_v = 8
+// количество горизональных геков
+const map_h = 9
 
 
 function build_hexes() {
-	let yoff = 4
-	let xoff = 62
-	let hex_w = 121.5
-	let hex_r = hex_w / sqrt(3)
-	let hex_h = hex_r * 2
 
-	let w = hex_w / 2
-	let a = hex_h / 2
-	let b = hex_h / 4
+    //Смещение. По сути начальные кооодиты
+    let xoff = 339
+    let yoff = 882
+
+    // TODO сделать небольшое расстоения между гексами, чтобы они друг на друга не заезжали. 
+    //Радиус описывающей гекс окружности. Нужен для описания смещений. 
+    let hex_w = 143
+
+
+
+    // Половина длины по горизонтале 
+    let hex_h = hex_w
+    // Половина длины по вертикати. 
+    let hex_v = (hex_w * sqrt(3))/2
 
     function add_hex(x, y) {
-		let sm_hex_w = hex_w - 8
-		let sm_hex_h = sm_hex_w / sqrt(3) * 2
-		let ww = sm_hex_w / 2
-		let aa = sm_hex_h / 2
-		let bb = sm_hex_h / 4
 		return [
-			[ round(x),   round(y-aa) ],
-			[ round(x+ww), round(y-bb) ],
-			[ round(x+ww), round(y+bb) ],
-			[ round(x),   round(y+aa) ],
-			[ round(x-ww), round(y+bb) ],
-			[ round(x-ww), round(y-bb) ]
+			[ round(x-hex_h/2), round(y-hex_v) ],
+			[ round(x-hex_h),         round(y) ],
+			[ round(x-hex_h/2), round(y+hex_v) ],
+			[ round(x+hex_h/2), round(y+hex_v) ],
+			[ round(x+hex_h),         round(y) ],
+			[ round(x+hex_h/2), round(y-hex_v) ]
 		].join(" ")
 	}
 
-	for (let y = 0; y < map_h+1; ++y) {
-		for (let x = 0; x < map_w+1; ++x) {
-			let hex_id = y * map_w + x
-			let xx = x + y/2 - 4.5
-			let hex_x = (xoff + hex_w * xx + hex_w/2)
-			let hex_y = (yoff + hex_h * 3 / 4 * y + hex_h/2)
-
-			ui.hex_x[hex_id] = round(hex_x)
-			ui.hex_y[hex_id] = round(hex_y)
-
-
-            let hex = ui.hexes[hex_id] = document.createElementNS(svgNS, "polygon")
-            hex.setAttribute("class", "hex")
-            hex.setAttribute("points", add_hex(hex_x, hex_y))
-//            hex.addEventListener("mousedown", on_click_hex)
-  //          hex.addEventListener("mouseenter", on_focus_hex)
-    //        hex.addEventListener("mouseleave", on_blur)
-            hex.hex = hex_id
-            document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
-			
-		}
+    /*
+        Идем сначала по вертикале. 
+        От 1 до количетсва вертикальных гексов.
+    */
+        for(let num_h = 0; num_h < map_h; ++num_h){
+            let x = (num_h * (hex_h + hex_h/2)) + xoff         
+            for (let num_v = 0; num_v < map_v; ++num_v) {
+                let y = (num_v * hex_v*2) - (hex_v*(num_h%2)) + yoff //тут пытаюсь сделать 
+                let hex_id = '' + num_h + num_v
+                let hex = ui.hexes[hex_id] = document.createElementNS(svgNS, "polygon") 
+                ui.hex_x[hex_id] = round(x)	
+                ui.hex_y[hex_id] = round(y)
+                hex.setAttribute("class", "hex")
+                hex.setAttribute("ID", '' + hex_id)
+                hex.setAttribute("points", add_hex(x, y))          
+                document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
+            }
 	}
     ui.loaded = true;
 }
 
 build_hexes()
+
+
+// Дебаг. Следим за координатами курсором.
+const cursorPositionElement = document.getElementById('cursor-position');
+            
+document.addEventListener('mousemove', (event) => {
+  const x = event.clientX;
+  const y = event.clientY;
+  cursorPositionElement.textContent = `X: ${x}, Y: ${y}`;
+});
+
+
+const coordsDiv = document.getElementById('coords');
+
+document.addEventListener('mousemove', (event) => {
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    coordsDiv.style.left = `${mouseX + 10}px`;
+    coordsDiv.style.top = `${mouseY + 10}px`;
+    coordsDiv.textContent = `X: ${mouseX}, Y: ${mouseY}`;
+});
