@@ -15,6 +15,17 @@ let ui = {
 }
 
 
+function is_map_hex(x) {
+	return x < hex_exists.length && hex_exists[x] === 1
+}
+// visible map width = 22 hexes: el agheila -> alexandria
+// visible map height = 9 hexes: oasis to derne
+
+const map_w = 3
+const map_h = 3
+const hexmonth = map_w * map_h
+
+
 function build_hexes() {
 	let yoff = 4
 	let xoff = 62
@@ -52,21 +63,19 @@ function build_hexes() {
 			ui.hex_x[hex_id] = round(hex_x)
 			ui.hex_y[hex_id] = round(hex_y)
 
-			// Add hex cell
-			if (hex_exists[hex_id] || hex_special.includes(hex_id))
-			{
-				let hex = ui.hexes[hex_id] = document.createElementNS(svgNS, "polygon")
-				hex.setAttribute("class", "hex")
-				hex.setAttribute("points", add_hex(hex_x, hex_y))
-				hex.addEventListener("mousedown", on_click_hex)
-				hex.addEventListener("mouseenter", on_focus_hex)
-				hex.addEventListener("mouseleave", on_blur)
-				hex.hex = hex_id
-				document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
-			}
+
+            let hex = ui.hexes[hex_id] = document.createElementNS(svgNS, "polygon")
+            hex.setAttribute("class", "hex")
+            hex.setAttribute("points", add_hex(hex_x, hex_y))
+//            hex.addEventListener("mousedown", on_click_hex)
+  //          hex.addEventListener("mouseenter", on_focus_hex)
+    //        hex.addEventListener("mouseleave", on_blur)
+            hex.hex = hex_id
+            document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
+			
 		}
 	}
-
-
-    ui.loaded = true
+    ui.loaded = true;
 }
+
+build_hexes()
