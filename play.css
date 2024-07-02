@@ -42,11 +42,12 @@ main { background-color: dimgray; }
 	box-shadow: 0 0 4px 3px hsl(345, 20%, 20%);
 }
 
+/*
 .unit{
 	transform: translate(345px, -830px);
 }
 
-
+*/ 
 .unit.S4{
 	background-image: url(units/G_7.ID_S4.png);
 }
@@ -67,11 +68,6 @@ main { background-color: dimgray; }
 
 
 
-
-
-
-
-
 /* координаты пикселей около курсовар
 TODO убрать когда отлажусь.
 */
@@ -83,4 +79,5 @@ TODO убрать когда отлажусь.
 	padding: 5px;
 	border-radius: 5px;
 	pointer-events: none; /* Чтобы элемент не мешал кликам мыши */
+	z-index: 500;
 }
