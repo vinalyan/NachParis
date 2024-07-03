@@ -96,9 +96,9 @@ function build_hexes() {
                 hex.setAttribute("class", "hex")
                 hex.setAttribute("ID", '' + hex_id)
                 hex.setAttribute("points", add_hex(x, y))  
-               hex.addEventListener("mousedown", on_click_hex)
+                hex.addEventListener("mousedown", on_click_hex)
 				hex.addEventListener("mouseenter", on_focus_hex)
-				//hex.addEventListener("mouseleave", on_blur)        
+				hex.addEventListener("mouseleave", on_blur)        
                 document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
             }
 	}
@@ -114,7 +114,7 @@ function build_units() {
 		elt.className = `unit`
 		elt.addEventListener("mousedown", on_click_unit)
 		elt.addEventListener("mouseenter", on_focus_unit)
-		//elt.addEventListener("mouseleave", on_blur)
+		elt.addEventListener("mouseleave", on_blur)
 		elt.unit = u
 	}
 	for (let u = 0; u < unit_count; ++u) {
@@ -125,9 +125,9 @@ function build_units() {
 build_units()
 
 function update_map() {
-    for (let i = 0; i < stack_list.length; ++i) {
-		stack_list[i] = []
-	}
+    //for (let i = 0; i < stack_list.length; ++i) {
+	//	stack_list[i] = []
+	//}
 	for (let u = 0; u < unit_count; ++u) 
         {
             let hex = unit_hex(u)
@@ -135,11 +135,11 @@ function update_map() {
 		    if (!ui.units_holder.contains(e))
             ui.units_holder.appendChild(e)    
             e.stack = stack_list[hex]
+            layout_stack(stack_list[hex], hex, ui.hex_x[u],ui.hex_y[u],60, -1)
         }
 
 }
 
-update_map()
 
 //количество отрядов в гексе.
 
@@ -156,10 +156,8 @@ function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
             let x, y, z
 
             if (stack === ui.focus) {
-                if (start_x > 2000) xdir = -1
-                if (start_x < 600) xdir = 1
-                x = start_x - 25 + xdir * ((i / wrap) | 0) * 56
-                y = start_y - 25 + (i % wrap) * 56
+                x = start_x - 37 + xdir * ((i / wrap) | 0) * 56
+                y = start_y - 40 + (i % wrap) * 80
                 z = 200
             } else {
                 if (stack.length <= 1) {
@@ -169,11 +167,11 @@ function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
                     x = start_x - 40 + i * 7
                     y = start_y - 40 + i * 7
                 } else if (stack.length <= 8) {
-                    x = start_x - 30 + i * 4
-                    y = start_y - 30 + i * 4
+                    x = start_x - 37 + i * 4
+                    y = start_y - 40 + i * 4
                 } else {
-                    x = start_x - 35 + i * 3
-                    y = start_y - 35 + i * 3
+                    x = start_x - 37 + i * 4
+                    y = start_y - 40 + i * 4
                 }
                 z = 100 + i
 
@@ -208,6 +206,7 @@ function blur_stack() {
 
 /// СОБЫТИЯ МЫШКИ И КЛАВЫ
 
+
 function on_click_unit(evt) {
 	if (evt.button === 0) {
 		evt.stopPropagation()
@@ -216,6 +215,7 @@ function on_click_unit(evt) {
 				blur_stack()
 	}
 }
+    
 
 function on_focus_unit(evt) {
 	let u = evt.target.unit
@@ -234,18 +234,24 @@ function on_click_hex(evt) {
     }
 }
 
+function on_blur(evt) {
+	document.getElementById("status").textContent = ""
+}
+
 
 // КОНЕЦ СОБЫТИЙ МЫШИ И КЛАВЫ
 
 //TODO убрать 
-let units_start_hexes = [2,12,22,22,30,30,30,55,55,55]
+let units_start_hexes = [30,37,37,37,37,37,37,37,37,37]
 function setup (start_hexes) {
     for (let u = 0; u < start_hexes.length; ++u)
         {
             stack_list[start_hexes[u]].push(u)
             set_unit_hex(u, start_hexes[u])             
-            layout_stack(stack_list[start_hexes[u]],ui.hexes[start_hexes[u]],ui.hex_x[start_hexes[u]],ui.hex_y[start_hexes[u]],71.5, 1) 
+         //   layout_stack(stack_list[start_hexes[u]],ui.hexes[start_hexes[u]],ui.hex_x[start_hexes[u]],ui.hex_y[start_hexes[u]],71.5, 1) 
         }
+        update_map()
+
 }
 setup(units_start_hexes)
 
