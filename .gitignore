@@ -13,3 +13,9 @@ resources/sass/.sass-cache/
 resources/.arch-internal-preview.css
 .arch-internal-preview.css
 .DS_Store
+common/util.js
+common/replay.js
+common/popup.js
+common/client.js
+common/columbia.css
+common/client.css

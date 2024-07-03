@@ -2,24 +2,53 @@
 
 // https://www.redblobgames.com/grids/hexagons/
 
-// Генерим гексы.
-
 const svgNS = "http://www.w3.org/2000/svg"
 const round = Math.round
 const sqrt = Math.sqrt
+
+///TODO временные файлы убрать. Херабота должна быть в файле rules.
+
+let unit_states = []
+
+
+/// тут заканчиваются временные переменные
+
 
 let ui = {
 	hexes: [],
 	hex_x: [],
 	hex_y: [],
     units: [],
+    units_holder: document.getElementById("units"),
+    focus: null,
+}
+
+// СОСТОЯНИЕ ОТРЯДОВ 
+//Гекс отряда 
+const UNIT_HEX_SHIFT = 0
+const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
+
+function unit_hex(u) {
+	return (unit_states[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
+}
+
+//TODO временная функция убрать. 
+function set_unit_hex(u, x) {
+	unit_states[u] = (unit_states[u] & ~UNIT_HEX_MASK) | (x << UNIT_HEX_SHIFT)
 }
 
 // количество вертрикальных гексов
 const map_v = 8
 // количество горизональных геков
 const map_h = 9
+//количество юнитов
+const unit_count = 10
 
+let stack_list = new Array(map_v * map_h)
+for (let i = 0; i < stack_list.length; ++i)
+	stack_list[i] = []
+
+// Генерим гексы.
 
 function build_hexes() {
 
@@ -66,7 +95,10 @@ function build_hexes() {
                 ui.hex_y[hex_id] = round(y)
                 hex.setAttribute("class", "hex")
                 hex.setAttribute("ID", '' + hex_id)
-                hex.setAttribute("points", add_hex(x, y))          
+                hex.setAttribute("points", add_hex(x, y))  
+               hex.addEventListener("mousedown", on_click_hex)
+				hex.addEventListener("mouseenter", on_focus_hex)
+				//hex.addEventListener("mouseleave", on_blur)        
                 document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
             }
 	}
@@ -75,26 +107,52 @@ function build_hexes() {
 
 build_hexes()
 
-//количество отрядов в гексе. 
-let stack_list = new Array(map_v * map_h)
-for (let i = 0; i < stack_list.length; ++i)
-	stack_list[i] = []
+function build_units() {
+	function build_unit(u) {
+		//let nationality = is_axis_unit(u) ? "axis" : "allied"   
+		let elt = ui.units[u] = document.createElement("div")
+		elt.className = `unit`
+		elt.addEventListener("mousedown", on_click_unit)
+		elt.addEventListener("mouseenter", on_focus_unit)
+		//elt.addEventListener("mouseleave", on_blur)
+		elt.unit = u
+	}
+	for (let u = 0; u < unit_count; ++u) {
+		build_unit(u)
+	}
+}
+
+build_units()
+
+function update_map() {
+    for (let i = 0; i < stack_list.length; ++i) {
+		stack_list[i] = []
+	}
+	for (let u = 0; u < unit_count; ++u) 
+        {
+            let hex = unit_hex(u)
+            let e = ui.units[u]
+		    if (!ui.units_holder.contains(e))
+            ui.units_holder.appendChild(e)    
+            e.stack = stack_list[hex]
+        }
+
+}
+
+update_map()
+
+//количество отрядов в гексе.
+
+
 
 //Устанваливаем отряд к гекс.
-//Тут надо все переделать
-
-stack_list[5] = [0,1,2] 
-
-let s = 17
-
-layout_stack(stack_list[5],ui.hexes[s],ui.hex_x[s],ui.hex_y[s],71.5, 1)
 
 function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
 	for (let i = 0; i < stack.length; ++i) {
         if(stack[i].length != 0)  //не пустой гекс. TODO переделать. 
         {
             let u = stack[i]  //5 
-            let e = document.getElementById("units").children[i] //TODO заменить ui.units[u]
+            let e = ui.units[u] //TODO заменить ui.units[u]
             let x, y, z
 
             if (stack === ui.focus) {
@@ -122,88 +180,76 @@ function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
             }
             e.style.top = y + "px"
             e.style.left = x + "px"
-            e.style.zIndex = z
+            e.style.zIndex = 100 + z
 
-           // update_unit(e, u)
+ //           update_unit(e, u)
         }
 	}
+}
 
+//разворачиваем стек
+function focus_stack(stack) {
+	if (ui.focus !== stack) {
+		ui.focus = stack
+		update_map()
+		return stack.length <= 1 
+	}
+	return true
+}
+
+//сворачиваем стек
+function blur_stack() {
+	if (ui.focus !== null) {
+		ui.focus = null
+		update_map()
+	}
 }
 
 
-/*
-//обновление карты. Когда все пререрисовываем. 
-function update_map() {
+/// СОБЫТИЯ МЫШКИ И КЛАВЫ
 
-	for (let i = 0; i < stack_list.length; ++i) {
-		stack_list[i][0].length = 0
-		stack_list[i][1].length = 0
-	}
-
-	for (let u = 0; u < unit_count; ++u) {
-		let e = ui.units[u]
-		let hex = unit_hex(u)
-		if (hex) {
-			if (!ui.units_holder.contains(e))
-				ui.units_holder.appendChild(e)
-			if (is_axis_unit(u)) {
-				stack_list[hex][0].push(u)
-				e.stack = stack_list[hex][0]
-			} else {
-				stack_list[hex][1].push(u)
-				e.stack = stack_list[hex][1]
-			}
-			e.hex = hex
-		} else {
-			e.remove()
-		}
-	}
-
-	for (let i = 0; i < stack_list.length; ++i) {
-		stack_list[i][0].sort(cmp_unit_stack)
-		stack_list[i][1].sort(cmp_unit_stack)
-	}
-
-	for (let hex = 0; hex < stack_list.length; ++hex) {
-		let start_x = ui.hex_x[hex]
-		let start_y = ui.hex_y[hex]
-		let wrap = 6
-
-		if (is_setup_hex(hex)) {
-			start_x = 1095
-			start_y = 25 + 8
-		}
-
-		let shared = (stack_list[hex][0].length > 0) && (stack_list[hex][1].length > 0)
-		for (let aa = 0; aa < 2; ++aa) {
-			let this_y = start_y
-			if (stack_list[hex][aa] === ui.focus) {
-				let height = Math.min(wrap, stack_list[hex][aa].length) * 56
-				if (this_y + height + 25 > 960)
-					this_y = 960 - height - 25
-			}
-			if (shared) {
-				if (aa === 0)
-					layout_stack(stack_list[hex][aa], hex, start_x - 28, this_y + 2, wrap, -1)
-				else
-					layout_stack(stack_list[hex][aa], hex, start_x + 28, this_y - 2, wrap, 1)
-			} else {
-				layout_stack(stack_list[hex][aa], hex, start_x, this_y, wrap, 1)
-			}
-		}
+function on_click_unit(evt) {
+	if (evt.button === 0) {
+		evt.stopPropagation()
+		if (focus_stack(evt.target.stack, evt.target.hex))
+			if (!send_action('unit', evt.target.unit))
+				blur_stack()
 	}
 }
-*/
+
+function on_focus_unit(evt) {
+	let u = evt.target.unit
+ 	let t = ""
+	document.getElementById("status").textContent = t
+}
+
+function on_focus_hex(evt) {
+	let hex = evt.target.hex
+}
+
+function on_click_hex(evt) {
+	if (evt.button === 0) {
+		if (send_action('hex', evt.target.hex))
+			evt.stopPropagation()
+    }
+}
+
+
+// КОНЕЦ СОБЫТИЙ МЫШИ И КЛАВЫ
+
+//TODO убрать 
+let units_start_hexes = [2,12,22,22,30,30,30,55,55,55]
+function setup (start_hexes) {
+    for (let u = 0; u < start_hexes.length; ++u)
+        {
+            stack_list[start_hexes[u]].push(u)
+            set_unit_hex(u, start_hexes[u])             
+            layout_stack(stack_list[start_hexes[u]],ui.hexes[start_hexes[u]],ui.hex_x[start_hexes[u]],ui.hex_y[start_hexes[u]],71.5, 1) 
+        }
+}
+setup(units_start_hexes)
 
 // Дебаг. Следим за координатами курсором.
-const cursorPositionElement = document.getElementById('cursor-position');
-            
-document.addEventListener('mousemove', (event) => {
-  const x = event.clientX;
-  const y = event.clientY;
-  cursorPositionElement.textContent = `X: ${x}, Y: ${y}`;
-});
-
 
 const coordsDiv = document.getElementById('coords');
 
