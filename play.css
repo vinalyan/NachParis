@@ -66,6 +66,17 @@ main { background-color: dimgray; }
 }
 
 
+svg .hex.selected {
+	stroke: yellow;
+	stroke-dasharray: none;
+}
+
+svg .hex.tip {
+	stroke: yellow;
+	stroke-width: 3;
+	stroke-dasharray: 4 4;
+}
+
 
 
 

@@ -99,6 +99,7 @@ function build_hexes() {
                 hex.addEventListener("mousedown", on_click_hex)
 				hex.addEventListener("mouseenter", on_focus_hex)
 				hex.addEventListener("mouseleave", on_blur)        
+                hex.hex = hex_id
                 document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
             }
 	}
@@ -145,8 +146,7 @@ function update_map() {
 
 
 
-//Устанваливаем отряд к гекс.
-
+//отрисовываем отряды в гексах
 function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
 	for (let i = 0; i < stack.length; ++i) {
         if(stack[i].length != 0)  //не пустой гекс. TODO переделать. 
@@ -225,6 +225,9 @@ function on_focus_unit(evt) {
 
 function on_focus_hex(evt) {
 	let hex = evt.target.hex
+    let text = ui.hexes[hex].hex
+	document.getElementById("status").textContent = text
+
 }
 
 function on_click_hex(evt) {
@@ -238,6 +241,11 @@ function on_blur(evt) {
 	document.getElementById("status").textContent = ""
 }
 
+document.getElementById("map").addEventListener("mousedown", function (evt) {
+	if (evt.button === 0) {
+		blur_stack()
+	}
+})
 
 // КОНЕЦ СОБЫТИЙ МЫШИ И КЛАВЫ
 

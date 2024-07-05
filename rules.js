@@ -24,6 +24,7 @@ function logbr() {
 	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
 		game.log.push("")
 }
+
 // SETUP
 
 exports.setup = function (seed, scenario, options) {
@@ -60,9 +61,6 @@ function set_unit_hex(u, x) {
 	invalidate_caches()
 	game.units[u] = (game.units[u] & ~UNIT_HEX_MASK) | (x << UNIT_HEX_SHIFT)
 }
-
-
-
 
 
 
