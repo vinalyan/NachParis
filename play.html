@@ -12,7 +12,36 @@
 <script defer src="data.js"></script>
 <script defer src="play.js"></script>
 
-</head>
+<header>
+	<div id="toolbar">
+		<details>
+			<summary><img src="/images/cog.svg"></summary>
+			<menu>
+				<li><a href="info/rules.html" target="_blank">Rules</a>
+				<li><a href="info/units.html" target="_blank">Units</a>
+			</menu>
+		</details>
+		<button onclick="toggle_supply()"><img src="/images/oil-drum.svg"></button>
+		<button onclick="toggle_units()"><img src="/images/earth-africa-europe.svg"></button>
+	</div>
+</header>
+
+<aside>
+	<div id="roles">
+		<div class="role" id="role_Axis">
+			<div class="role_name">Axis</div>
+			<div class="role_stat" id="axis_supply">0</div>
+			<div class="role_user">-</div>
+		</div>
+		<div class="role" id="role_Allied">
+			<div class="role_name">Allied</div>
+			<div class="role_stat" id="allied_supply">0</div>
+			<div class="role_user">-</div>
+		</div>
+	</div>
+	<div id="log"></div>
+</aside>
+
 <body>
     <main data-min-zoom="1" data-max-zoom="2">
         <div id="mapwrap">

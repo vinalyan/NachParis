@@ -1,4 +1,30 @@
 main { background-color: dimgray; }
+#roles { background-color: silver; }
+header { background-color: silver; }
+header.your_turn { background-color: orange; }
+#role_German { background-color: darkseagreen; }
+#role_Allied { background-color: tan; }
+
+#log { background-color: ghostwhite; }
+#log .h1 { background-color: dimgray; color: ghostwhite; font-weight: bold; padding-top:2px; padding-bottom:2px; text-align: center; }
+#log .h2 { background-color: gainsboro; padding-top:2px; padding-bottom:2px; text-align: center; }
+#log .h3 { background-color: gainsboro; text-align: center; }
+#log .h4 { text-decoration: underline; font-style: italic; }
+#log .axis { background-color: hsl(120, 25%, 75%) }
+#log .allied { background-color: hsl(35, 45%, 80%) }
+#log > .i { padding-left: 20px; }
+#log > .ii { padding-left: 32px; }
+#log > div > .i { padding-left: 12px; }
+#log .hex:hover { cursor: pointer; text-decoration: underline; }
+
+.action {
+	cursor: pointer;
+}
+
+#log {
+	font-variant-numeric: tabular-nums;
+}
+
 
 
 #mapwrap {
