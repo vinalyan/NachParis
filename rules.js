@@ -52,8 +52,6 @@ function set_unit_hex(u, x) {
 }
 
 
-
-
 function logbr() {
 	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
 		game.log.push("")
@@ -66,6 +64,14 @@ function log(s) {
 function logbr() {
 	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
 		game.log.push("")
+}
+
+function set_active_player() {
+//	clear_undo()
+	if (game.active !== game.phasing) {
+		game.active = game.phasing
+//		update_aliases()
+	}
 }
 
 // === PUBLIC FUNCTIONS ===
@@ -85,22 +91,17 @@ exports.roles = [
 
 
 exports.setup = function (seed, scenario, options) {
-	game = {
+	load_state({
 		seed: seed,
 		GT: 0,
 		state: null,
 		log: [],
 		undo: [],
-
-	}
+		summary: null,
+		scenario: scenario,
+	})
     // TODO тут надо накрутить обработку сценариев. 
-    
-	game.state = 'new_game'
-
-	//start_campaign()
-	logbr()
-	log("новая игра")
-	console.log('exports.setup прошли: ')
+	setup(scenario)
 	return game
 }
 
@@ -127,11 +128,39 @@ function common_view(current) {
 	return view
 }
 
-// SETUP
-
-function current_scenario() {
-	return SCENARIOS[game.scenario]
+function log_br() {
+	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
+		game.log.push("")
 }
+
+function log(msg) {
+	game.log.push(msg)
+}
+
+function log_h1(msg) {
+	log_br()
+	log(".h1 " + msg)
+	log_br()
+}
+
+function log_h2(msg) {
+	log_br()
+	log(".h2 " + msg)
+	log_br()
+}
+
+function log_h3(msg) {
+	log_br()
+	log(".h3 " + msg)
+	log_br()
+}
+
+function log_h4(msg) {
+	log_br()
+	log(".h4 " + msg)
+}
+
+//SETUP
 
 const SCENARIOS = {
 	"SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE": {
@@ -142,4 +171,22 @@ const SCENARIOS = {
 		start: 13,
 		end: 15,
 	},
+}
+
+function setup(scenario_name) {
+	let scenario = SCENARIOS[scenario_name]
+
+	log_h1(scenario_name)
+
+
+//	SETUP[scenario_name]()
+
+//	game.phasing = ALLIED
+	set_active_player()
+}
+
+
+
+function current_scenario() {
+	return SCENARIOS[game.scenario]
 }
