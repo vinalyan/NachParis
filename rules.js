@@ -5,48 +5,37 @@ var states = {}
 var game = null
 var view = null
 
+const GERMAN = 'German'
+const ALLIED = 'Allied'
+const TIMEOUT = 250
+var timeout = 0
 
 
-exports.scenarios = [
-	"1",
-    "SCENARIO Nº2 - ASSAULT ON LIEGE",
-    "SCENARIO Nº3 - STRONG ATTACK ON NAMUR",
-    "SCENARIO Nº4 - AROUND THE MARSHES OF SAINT-GOND",
-    "SCENARIO Nº5 - THE SIEGE OF FORTRESS MAUBEUGE",
-]
 
-exports.roles = [
-	"German",
-	"Allied",
-]
+// === STATE CACHES ===
 
-function logbr() {
-	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
-		game.log.push("")
-}
-
-// SETUP
-
-exports.setup = function (seed, scenario, options) {
-	game = {
-		seed: seed,
-		GT: 0,
-		state: null,
-		log: [],
-		undo: [],
+function update_aliases() {
+	if (game.active === GERMAN) {
+		console.log(GERMAN)
+	} else {
+		console.log(ALLIED)		
 	}
-    // TODO тут надо накрутить обработку сценариев. 
-    
-	game.state = 'new_game'
-
-	//start_campaign()
-	logbr()
-	log("новая игра")
-	console.log('exports.setup прошли: ')
-	return game
 }
 
 
+function invalidate_caches() {
+//	presence_invalid = true
+//	supply_axis_invalid = true
+//	supply_allied_invalid = true
+}
+
+function load_state(state) {
+	if (game !== state) {
+		game = state
+		invalidate_caches()
+		update_aliases()
+	}
+}
 
 ///UNIT STATE 
 
@@ -74,3 +63,83 @@ function log(s) {
 	game.log.push(s)
 }
 
+function logbr() {
+	if (game.log.length > 0 && game.log[game.log.length-1] !== "")
+		game.log.push("")
+}
+
+// === PUBLIC FUNCTIONS ===
+
+exports.scenarios = [
+	"SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE",
+    "SCENARIO Nº2 - ASSAULT ON LIEGE",
+    "SCENARIO Nº3 - STRONG ATTACK ON NAMUR",
+    "SCENARIO Nº4 - AROUND THE MARSHES OF SAINT-GOND",
+    "SCENARIO Nº5 - THE SIEGE OF FORTRESS MAUBEUGE",
+]
+
+exports.roles = [
+	"German",
+	"Allied",
+]
+
+
+exports.setup = function (seed, scenario, options) {
+	game = {
+		seed: seed,
+		GT: 0,
+		state: null,
+		log: [],
+		undo: [],
+
+	}
+    // TODO тут надо накрутить обработку сценариев. 
+    
+	game.state = 'new_game'
+
+	//start_campaign()
+	logbr()
+	log("новая игра")
+	console.log('exports.setup прошли: ')
+	return game
+}
+
+exports.view = function(state, current) {
+	timeout = Date.now() + TIMEOUT // don't think too long!
+	load_state(state)
+
+	let scenario = current_scenario()
+
+	view = {
+		start: scenario.start,
+		end: scenario.end,
+		units: game.units,
+	} 
+
+	return common_view(current)
+}
+
+
+//COMMON TEMOLATES
+
+function common_view(current) {
+	view.log = game.log
+	return view
+}
+
+// SETUP
+
+function current_scenario() {
+	return SCENARIOS[game.scenario]
+}
+
+const SCENARIOS = {
+	"SCENARIO Nº1 - VICTORIOUS RECOVERY AT GUISE": {
+		start: 13,
+		end: 15,
+	},
+	"SCENARIO Nº2 - ASSAULT ON LIEGE": {
+		start: 13,
+		end: 15,
+	},
+}

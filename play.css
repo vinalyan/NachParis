@@ -10,7 +10,7 @@ header.your_turn { background-color: orange; }
 #log .h2 { background-color: gainsboro; padding-top:2px; padding-bottom:2px; text-align: center; }
 #log .h3 { background-color: gainsboro; text-align: center; }
 #log .h4 { text-decoration: underline; font-style: italic; }
-#log .axis { background-color: hsl(120, 25%, 75%) }
+#log .german { background-color: hsl(120, 25%, 75%) }
 #log .allied { background-color: hsl(35, 45%, 80%) }
 #log > .i { padding-left: 20px; }
 #log > .ii { padding-left: 32px; }
