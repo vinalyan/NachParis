@@ -67,11 +67,43 @@ function logbr() {
 }
 
 function set_active_player() {
-//	clear_undo()
+	clear_undo()
 	if (game.active !== game.phasing) {
 		game.active = game.phasing
 //		update_aliases()
 	}
+}
+
+function set_passive_player() {
+	clear_undo()
+	let nonphasing = (game.phasing === GERMAN ? ALLIED : GERMAN)
+	if (game.active !== nonphasing) {
+		game.active = nonphasing
+		update_aliases()
+	}
+}
+
+function set_enemy_player() {
+	if (is_active_player())
+		set_passive_player()
+	else
+		set_active_player()
+}
+
+function is_active_player() {
+	return game.active === game.phasing
+}
+
+function is_passive_player() {
+	return game.active !== game.phasing
+}
+
+function is_german_player() {
+	return game.active === GERMAN
+}
+
+function is_allied_player() {
+	return game.active === ALLIED
 }
 
 // === PUBLIC FUNCTIONS ===
@@ -93,7 +125,7 @@ exports.roles = [
 exports.setup = function (seed, scenario, options) {
 	load_state({
 		seed: seed,
-		GT: 0,
+		GT: scenario.start,
 		state: null,
 		log: [],
 		undo: [],
@@ -101,7 +133,7 @@ exports.setup = function (seed, scenario, options) {
 		scenario: scenario,
 	})
     // TODO тут надо накрутить обработку сценариев. 
-	setup(scenario)
+	setup()
 	return game
 }
 
@@ -160,6 +192,20 @@ function log_h4(msg) {
 	log(".h4 " + msg)
 }
 
+function gen_action(action, argument) {
+	if (argument !== undefined) {
+		if (!(action in view.actions)) {
+			view.actions[action] = [ argument ]
+		} else {
+			set_add(view.actions[action], argument)
+		}
+	} else {
+		view.actions[action] = 1
+	}
+}
+
+
+
 //SETUP
 
 const SCENARIOS = {
@@ -173,20 +219,112 @@ const SCENARIOS = {
 	},
 }
 
-function setup(scenario_name) {
-	let scenario = SCENARIOS[scenario_name]
-
-	log_h1(scenario_name)
-
-
-//	SETUP[scenario_name]()
-
-//	game.phasing = ALLIED
+function setup() {
+	game.phasing = GERMAN
 	set_active_player()
+	log_h1(game.active)
+	goto_admin_phase()
 }
-
-
 
 function current_scenario() {
 	return SCENARIOS[game.scenario]
+}
+
+// === PLAYER TURN ===
+
+/*
+Каждый ход начинают немцы. 
+Если ход заканчивают немцы, то свой ход начинают союзники. 
+Если ход заканчивают союзники, то GT меняется на +1.
+
+Каждый ход 4 фазы
+Каждая делится на шаги. 
+Активный игрок является атакующим
+Пассивный обороняющимся.
+
+*/
+
+//===ADMIN PHASE
+
+function goto_admin_phase(){
+	log_h2(`Тут будет админская фаза `)
+	log_h3(`Тут рассчеты ЖД линий`)
+
+	game.selected = []
+	game.summary = {}
+	goto_admin_stape_1()
+	goto_admin_stape_2()
+	goto_admin_stape_3()
+	goto_barrage_phase()
+}
+	//==Admin step 1
+function goto_admin_stape_1()
+	{
+		log_h3(`Шаг 1. Бросок на дождик  `)
+		game.state = 'admin_stape_1'
+	}
+
+	//==Admin step 2
+function goto_admin_stape_2()
+	{
+		log_h3(`Шаг 2. Проверка линий коммуникаци  `)
+		game.state = 'admin_stape_2'
+	}
+
+	//==Admin step 3
+function goto_admin_stape_3()
+	{
+		log_h3(`Шаг 4. Чиним поломки  `)
+		game.state = 'admin_stape_2'
+	}
+
+//===BARRAGE PHASE
+function goto_barrage_phase()
+{
+	log_h2(`${game.active} \nАртналет `)
+	ABU_ABF()
+	Assault_ABF()
+}
+
+function ABU_ABF()
+{
+	log_h3(`Стреляет Арта  `)
+	game.state = 'ABU_ABF'
+}
+
+function Assault_ABF()
+{
+	log_h3(`Заявляем штурм`)
+	game.state = 'ABU_ABF'
+}
+
+
+//=== MOVEMENT PHASE
+
+//=== COMBAT PHASE
+
+
+
+function goto_player_turn() {
+	set_active_player()
+
+	log_h2(game.phasing)
+
+	// paranoid resetting of state
+	game.side_limit = {}
+	game.rommel = 0
+	game.from1 = game.from2 = 0
+	game.to1 = game.to2 = 0
+
+	// reset moved and fired flags
+	set_clear(game.fired)
+	set_clear(game.moved)
+
+	game.commit = null
+
+	goto_initial_supply_check()
+}
+
+function end_player_turn() {
+
 }

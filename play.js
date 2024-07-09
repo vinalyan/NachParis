@@ -106,6 +106,17 @@ function build_hexes() {
     ui.loaded = true;
 }
 
+
+function on_update() {
+	if (!ui.loaded) {
+		return setTimeout(on_update, 500)
+	}
+    update_map()
+    action_button("end_ABU_ABF", "End ABU/ABF")
+    action_button("undo", "Undo")
+
+}
+
 build_hexes()
 
 function build_units() {
@@ -248,6 +259,79 @@ document.getElementById("map").addEventListener("mousedown", function (evt) {
 })
 
 // КОНЕЦ СОБЫТИЙ МЫШИ И КЛАВЫ
+
+function sub_hex_name(match, p1, offset, string) {
+	let x = p1 | 0
+	let n = hex_name[x]
+	return `<span class="hex" onmouseenter="on_focus_hex_tip(${x})" onmouseleave="on_blur_hex_tip(${x})" onclick="on_click_hex_tip(${x})">${n}</span>`
+}
+
+function sub_unit_name(match, p1, offset, string) {
+	let u = p1 | 0
+	return units[u].name
+}
+
+function on_log_line(text, cn) {
+	let p = document.createElement("div")
+	if (cn) p.className = cn
+	p.innerHTML = text
+	return p
+}
+
+function on_log(text) {
+	let p = document.createElement("div")
+
+	if (text.match(/^>>/)) {
+                text = text.substring(2)
+                p.className = "ii"
+        }
+
+	if (text.match(/^>/)) {
+                text = text.substring(1)
+                p.className = "i"
+        }
+
+	text = text.replace(/&/g, "&amp;")
+	text = text.replace(/</g, "&lt;")
+	text = text.replace(/>/g, "&gt;")
+
+//	text = text.replace(/#(\d+)/g, sub_hex_name)
+//	text = text.replace(/%(\d+)/g, sub_unit_name)
+
+	if (text.match(/^\.h1/)) {
+		text = text.substring(4)
+		p.className = "h1"
+	}
+	if (text.match(/^\.h2/)) {
+		text = text.substring(4)
+		if (text.startsWith("German"))
+			p.className = "h2 german"
+		else if (text.startsWith("Allied"))
+			p.className = "h2 allied"
+		else
+			p.className = "h2"
+	}
+	if (text.match(/^\.h3/)) {
+		text = text.substring(4)
+		p.className = "h3"
+	}
+	if (text.match(/^\.h4/)) {
+		text = text.substring(4)
+		p.className = "h4"
+	}
+
+	if (text.indexOf("\n") < 0) {
+		p.innerHTML = text
+	} else {
+		text = text.split("\n")
+		p.appendChild(on_log_line(text[0]))
+		for (let i = 1; i < text.length; ++i)
+			p.appendChild(on_log_line(text[i], "i"))
+	}
+	return p
+}
+
+
 
 //TODO убрать 
 let units_start_hexes = [30,37,37,37,37,37,37,37,37,37]
