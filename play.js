@@ -109,9 +109,7 @@ function on_update() {
     update_map()
     action_button("end_ABU_ABF", "End ABU/ABF")
     action_button("undo", "Undo")
-	action_button('to_Assault_ABF')
-	console.log('on_update')
-
+	action_button('to_Assault_ABF', "To Assault")
 }
 
 build_hexes()

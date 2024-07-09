@@ -213,7 +213,7 @@ function log_h4(msg) {
 	log(".h4 " + msg)
 }
 
-function gen_action(action, argument) {
+function s(action, argument) {
 	if (argument !== undefined) {
 		if (!(action in view.actions)) {
 			view.actions[action] = [ argument ]
@@ -244,14 +244,12 @@ const SCENARIOS = {
 
 function setup() {
 	game.phasing = GERMAN
-//	view.actions = {} //TODO убрать. 
 	set_active_player()
 	log_h1(game.scenario)
 	let start_hexes = [30,37,37,37,37,37,37,37,37,37]
 	for (let u = 0; u < start_hexes.length; ++u)
 		{  
 			set_unit_hex(u, start_hexes[u])
-	//		gen_action_unit(u) //TODO убрать 
 		}
 	goto_player_turn()
 }
@@ -316,7 +314,11 @@ function goto_admin_stape_3()
 //===BARRAGE PHASE
 function goto_barrage_phase()
 {
-	log_h2(`${game.active} \nАртналет `)
+	log_h2(`${game.active}\nАртналет `)
+
+//TODO тут как-то должен остановаиться
+// дальше тут появляеется кнопка to_Assault_ABF
+// по нажатию на нее переходим на след фазу. 
 	ABU_ABF()
 }
 
@@ -324,25 +326,26 @@ function ABU_ABF()
 {
 	log_h3(`Стреляет Арта  `)
 	game.state = 'ABU_ABF'
+
 }
 
 states.ABU_ABF = {
-	inactive: "barrage_phase",
+	inactive: "Barrage phase",
 	prompt() {
 		view.prompt = `Заканчиваем с вашим этим ABU_ABF.`
 		gen_action('to_Assault_ABF')
-		gen_action('keep')
+		
 	},
 	to_Assault_ABF()
 	{
 		Assault_ABF()
-	}
+	},
 }
 
 function Assault_ABF()
 {
 	log_h3(`Заявляем штурм`)
-	game.state = 'ABU_ABF'
+	game.state = 'Assault_ABF'
 }
 
 
