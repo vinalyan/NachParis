@@ -13,6 +13,7 @@ var timeout = 0
 
 
 // === STATE CACHES ===
+const unit_count = 10
 
 function update_aliases() {
 	if (game.active === GERMAN) {
@@ -131,6 +132,8 @@ exports.setup = function (seed, scenario, options) {
 		undo: [],
 		summary: null,
 		scenario: scenario,
+		gt: 0,
+		units: new Array(unit_count).fill(0),
 	})
     // TODO тут надо накрутить обработку сценариев. 
 	setup()
@@ -148,7 +151,7 @@ exports.view = function(state, current) {
 		end: scenario.end,
 		units: game.units,
 	} 
-
+	console.log('exports.view')
 	return common_view(current)
 }
 
@@ -157,6 +160,24 @@ exports.view = function(state, current) {
 
 function common_view(current) {
 	view.log = game.log
+	if (game.state === 'game_over') {
+		view.prompt = game.victory
+	} else if (current === 'Observer' || game.active !== current) {
+		let inactive = states[game.state].inactive || game.state
+		view.prompt = `Waiting for ${game.active} \u2014 ${inactive}...`
+	} else {
+		view.actions = {}
+		if (states[game.state])
+			states[game.state].prompt()
+		else
+			view.prompt = "Unknown state: " + game.state
+		if (view.actions.undo === undefined) {
+			if (game.undo && game.undo.length > 0)
+				view.actions.undo = 1
+			else
+				view.actions.undo = 0
+		}
+	}
 	return view
 }
 
@@ -204,7 +225,9 @@ function gen_action(action, argument) {
 	}
 }
 
-
+function gen_action_unit(u) {
+	gen_action('unit', u)
+}
 
 //SETUP
 
@@ -221,9 +244,16 @@ const SCENARIOS = {
 
 function setup() {
 	game.phasing = GERMAN
+//	view.actions = {} //TODO убрать. 
 	set_active_player()
-	log_h1(game.active)
-	goto_admin_phase()
+	log_h1(game.scenario)
+	let start_hexes = [30,37,37,37,37,37,37,37,37,37]
+	for (let u = 0; u < start_hexes.length; ++u)
+		{  
+			set_unit_hex(u, start_hexes[u])
+	//		gen_action_unit(u) //TODO убрать 
+		}
+	goto_player_turn()
 }
 
 function current_scenario() {
@@ -255,19 +285,24 @@ function goto_admin_phase(){
 	goto_admin_stape_1()
 	goto_admin_stape_2()
 	goto_admin_stape_3()
-	goto_barrage_phase()
 }
 	//==Admin step 1
 function goto_admin_stape_1()
 	{
-		log_h3(`Шаг 1. Бросок на дождик  `)
+		log_h3(`Шаг 1. Бросок на дождик`)
+		log_h4(`Тут немцы в первый ход бросают на дождик`)
+
 		game.state = 'admin_stape_1'
 	}
+
 
 	//==Admin step 2
 function goto_admin_stape_2()
 	{
 		log_h3(`Шаг 2. Проверка линий коммуникаци  `)
+		log_h4(`Линия коммуникаций фрицев заебок`)
+		log_h4(`Линия коммуникаций союзников тоже заебок`)
+
 		game.state = 'admin_stape_2'
 	}
 
@@ -283,13 +318,25 @@ function goto_barrage_phase()
 {
 	log_h2(`${game.active} \nАртналет `)
 	ABU_ABF()
-	Assault_ABF()
 }
 
 function ABU_ABF()
 {
 	log_h3(`Стреляет Арта  `)
 	game.state = 'ABU_ABF'
+}
+
+states.ABU_ABF = {
+	inactive: "barrage_phase",
+	prompt() {
+		view.prompt = `Заканчиваем с вашим этим ABU_ABF.`
+		gen_action('to_Assault_ABF')
+		gen_action('keep')
+	},
+	to_Assault_ABF()
+	{
+		Assault_ABF()
+	}
 }
 
 function Assault_ABF()
@@ -304,27 +351,37 @@ function Assault_ABF()
 //=== COMBAT PHASE
 
 
-
 function goto_player_turn() {
 	set_active_player()
 
 	log_h2(game.phasing)
-
-	// paranoid resetting of state
-	game.side_limit = {}
-	game.rommel = 0
-	game.from1 = game.from2 = 0
-	game.to1 = game.to2 = 0
-
-	// reset moved and fired flags
-	set_clear(game.fired)
-	set_clear(game.moved)
-
-	game.commit = null
-
-	goto_initial_supply_check()
+	goto_admin_phase()
+	goto_barrage_phase()
+	end_player_turn()
 }
 
 function end_player_turn() {
+	if (game.phasing === GERMAN)
+		game.phasing = ALLIED
+	else
+		{
+			game.gt ++
+		 	game.phasing = GERMAN
+		}
+	if (game.gt < 2)
+		goto_player_turn()
+	else
+		goto_end_game()
 
+}
+function goto_end_game() {
+	log_h1("End Game")
+}
+
+
+//=== COMMON LIBRARY ===
+
+function clear_undo() {
+	if (game.undo.length > 0)
+		game.undo = []
 }

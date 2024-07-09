@@ -29,12 +29,7 @@ const UNIT_HEX_SHIFT = 0
 const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
 
 function unit_hex(u) {
-	return (unit_states[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
-}
-
-//TODO временная функция убрать. 
-function set_unit_hex(u, x) {
-	unit_states[u] = (unit_states[u] & ~UNIT_HEX_MASK) | (x << UNIT_HEX_SHIFT)
+	return (view.units[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
 }
 
 // количество вертрикальных гексов
@@ -114,6 +109,8 @@ function on_update() {
     update_map()
     action_button("end_ABU_ABF", "End ABU/ABF")
     action_button("undo", "Undo")
+	action_button('to_Assault_ABF')
+	console.log('on_update')
 
 }
 
@@ -331,21 +328,6 @@ function on_log(text) {
 	return p
 }
 
-
-
-//TODO убрать 
-let units_start_hexes = [30,37,37,37,37,37,37,37,37,37]
-function setup (start_hexes) {
-    for (let u = 0; u < start_hexes.length; ++u)
-        {
-            stack_list[start_hexes[u]].push(u)
-            set_unit_hex(u, start_hexes[u])             
-         //   layout_stack(stack_list[start_hexes[u]],ui.hexes[start_hexes[u]],ui.hex_x[start_hexes[u]],ui.hex_y[start_hexes[u]],71.5, 1) 
-        }
-        update_map()
-
-}
-setup(units_start_hexes)
 
 // Дебаг. Следим за координатами курсором.
 
