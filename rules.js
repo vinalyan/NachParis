@@ -437,7 +437,7 @@ prompt() {
 		view.prompt = `Выберете доступное действие`
 		movement()
 //		unit_arrivals()
-//		facing()
+//		facing_unit()
 //		specific_structures_destruction()
 //		railroad_network_delimitation()
 //		split_units()
@@ -460,7 +460,7 @@ function unit_arrivals()
 	log_h4('Отряды прибыли')
 }
 
-function facing()
+function facing_unit()
 {
 	log_h4('Отряды покрутили жалами')
 }
@@ -487,7 +487,30 @@ function recombine_units()
 
 //=== COMBAT PHASE
 
+/*
+COMBAT PHASE
 
+state Resolution of Assault ABF
+state combat_phase_step_1
+- Combat
+	- Early CAV Withdrawal
+	- Combat results, 
+	- retreat, 
+	- advance, 
+	- change facing
+
+Remove "Step Loss" markers.
+Flip "2+ Step Loss" markers to "Step Loss" side
+
+state combat_phase_step_2
+	- Combat Movement
+	- Unit Consolidation
+	- Replacement Absorption
+	- Fieldworks Construction
+
+- Remove EXM, Preparatory Barrage Launched
+and ABF Assault markers
+*/
 
 
 
@@ -496,4 +519,29 @@ function recombine_units()
 function clear_undo() {
 	if (game.undo.length > 0)
 		game.undo = []
+}
+
+function push_undo() {
+	let copy = {}
+	for (let k in game) {
+		let v = game[k]
+		if (k === "undo")
+			continue
+		else if (k === "log")
+			v = v.length
+		else if (typeof v === "object" && v !== null)
+			v = object_copy(v)
+		copy[k] = v
+	}
+	game.undo.push(copy)
+}
+
+function pop_undo() {
+	let save_log = game.log
+	let save_undo = game.undo
+	let state = save_undo.pop()
+	save_log.length = state.log
+	state.log = save_log
+	state.undo = save_undo
+	load_state(state)
 }
