@@ -109,6 +109,8 @@ function on_update() {
     update_map()
     action_button("undo", "Undo")
 	action_button('end_ABF', "End ABF")
+	action_button('end_Assault_ABF', "End turn")
+
 }
 
 build_hexes()

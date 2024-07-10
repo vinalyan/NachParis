@@ -128,9 +128,9 @@ exports.setup = function (seed, scenario, options) {
 		undo: [],
 		summary: null,
 		scenario: scenario,
-		gt_start: scenario.start,
-		gt_end: scenario.endstart,
-		gt_now: scenario.start,
+		gt_start: SCENARIOS[scenario].start,
+		gt_end: SCENARIOS[scenario].end,
+		gt_now: SCENARIOS[scenario].start,
 		units: new Array(unit_count).fill(0),
 	})
     // TODO тут надо накрутить обработку сценариев. 
@@ -288,51 +288,49 @@ function current_scenario() {
 
 //===ADMIN PHASE
 
-function goto_admin_phase(){
-	log_h2(`Тут будет админская фаза `)
-	log_h3(`Тут рассчеты ЖД линий`)
+function admin_phase(){
+	log_h2(`${game.active}\nGT${game.gt_now}`)
+	log_h3(`I ADMIN`)
 
 	game.selected = []
 	game.summary = {}
-	goto_admin_stape_1()
-	goto_admin_stape_2()
-	goto_admin_stape_3()
+	admin_stape_1()
+	admin_stape_2()
+	admin_stape_3()
+
 }
 	//==Admin step 1
-function goto_admin_stape_1()
+function admin_stape_1()
 	{
-		log_h3(`Шаг 1. Бросок на дождик`)
+		log_h4(`Шаг 1. Бросок на дождик`)
 		log_h4(`Тут немцы в первый ход бросают на дождик`)
-		game.state = 'admin_stape_1'
 	}
 
 	//==Admin step 2
-function goto_admin_stape_2()
+function admin_stape_2()
 	{
-		log_h3(`Шаг 2. Проверка линий коммуникаци  `)
+		log_h4(`Шаг 2. Проверка линий коммуникаци  `)
 		log_h4(`Линия коммуникаций фрицев заебок`)
 		log_h4(`Линия коммуникаций союзников тоже заебок`)
-		game.state = 'admin_stape_2'
 	}
 
 	//==Admin step 3
-function goto_admin_stape_3()
+function admin_stape_3()
 	{
-		log_h3(`Шаг 4. Чиним поломки  `)
-		game.state = 'admin_stape_2'
+		log_h4(`Шаг 4. Чиним поломки  `)
 	}
 
 //===BARRAGE PHASE
-function goto_barrage_phase()
+function barrage_phase()
 {
-	log_h2(`${game.active}\nАртналет `)
+	log_h3(`II BARRAGE`)
 	ABU_ABF()
 }
 
 function ABU_ABF()
 {
 	game.state = 'ABU_ABF'
-	log_h3(`Стреляет Арта  `)
+	log_h4(`Стреляет Арта  `)
 
 
 }
@@ -340,7 +338,7 @@ function ABU_ABF()
 states.ABU_ABF = {
 	inactive: "Barrage phase",
 	prompt() {
-		view.prompt = `Заканчиваем с вашим этим ABU_ABF.`
+		view.prompt = `Постреляйте по юнитам и крепостям ABU_ABF.`
 		gen_action('end_ABF')		
 	},
 	end_ABF()
@@ -359,39 +357,42 @@ states.Assault_ABF = {
 	inactive: "Barrage phase",
 
 prompt() {
-		view.prompt = `Заканчиваем с вашим этим ABU_ABF.`
-		gen_action('to_Assault_ABF')
+		view.prompt = `Подготовьте отряды к штурму укреплений.`
+		gen_action('end_Assault_ABF')
 		},
-	to_Assault_ABF()
+		end_Assault_ABF()
 	{
-		Assault_ABF()
+		end_player_turn()
 	},
 }
 
 //=== MOVEMENT PHASE
+function muvemen_phase()
+{
 
+}
 //=== COMBAT PHASE
 
 
 function goto_player_turn() {
 	set_active_player()
-
-	log_h2(game.phasing)
-	goto_admin_phase()
-	goto_barrage_phase()
-	end_player_turn()
+	admin_phase()
+	barrage_phase()
 }
 
 function end_player_turn() {
+	log_h2(`${game.active}\nEnd Turn GT${game.gt_now}`)
 	if (game.phasing === GERMAN)
 		game.phasing = ALLIED
 	else
 		{
-			game.gt ++
+			game.gt_now ++
 		 	game.phasing = GERMAN
 		}
-	if (game.gt < 2)
-		goto_player_turn()
+	if (game.gt_now <= game.gt_end)
+		{
+			goto_player_turn()
+		}
 	else
 		goto_end_game()
 
