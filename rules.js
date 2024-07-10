@@ -286,7 +286,7 @@ function current_scenario() {
 
 */
 
-//==Player Turn
+//==PLAYER TURN====
 function goto_player_turn() {
 	set_active_player()
 	admin_phase()
@@ -312,6 +312,22 @@ function end_player_turn() {
 }
 function goto_end_game() {
 	log_h1("End Game")
+	end_game() 
+}
+
+function end_game() {
+
+	return goto_game_over("Draw", "No Victory!")
+}
+
+function goto_game_over(result, victory) {
+	game.state = 'game_over'
+	game.active = "None"
+	game.result = result
+	game.victory = victory
+	log_br()
+	log(game.victory)
+	return true
 }
 
 //===ADMIN PHASE
