@@ -446,7 +446,7 @@ prompt() {
 		},
 		end_movement_phase_step_2()
 	{
-		end_player_turn()
+		combat_phase()
 	},
 }
 
@@ -511,6 +511,153 @@ state combat_phase_step_2
 - Remove EXM, Preparatory Barrage Launched
 and ABF Assault markers
 */
+
+function combat_phase()
+{
+	log_h3(`IV COMBAT`)
+	resolution_of_assault()
+}
+
+function resolution_of_assault()
+{
+	game.state = 'resolution_of_assault'
+}
+
+states.resolution_of_assault = {
+	inactive: "Combat phase",
+	prompt()
+	{
+		view.prompt = `Надо вывести отряды на сколько-то там очков`
+		gen_action('end_resolution_of_assault')
+	},
+	end_resolution_of_assault()
+	{
+		combat_phase_step_1()
+	},
+}
+
+function combat_phase_step_1()
+{
+	log_h4("combat_phase_step_1")
+	game.state = 'combat_phase_step_1'
+}
+
+states.combat_phase_step_1 = {
+	inactive: "Combat phase",
+	prompt()
+	{
+		view.prompt = `Надо вывести отряды на сколько-то там очков`
+		gen_action('end_combat_phase_step_1')
+		gen_action('combat')
+	},
+	end_combat_phase_step_1()
+	{
+		remove_step_loss_markers()
+		//combat_phase()
+	},
+	combat()
+	{
+		combat()
+	},
+}
+
+function combat()
+{
+	log_h4("combat")
+	/*
+		- Early CAV Withdrawal
+		- Combat results, 
+		- retreat, 
+		- advance, 
+		- change facing
+	*/
+}
+
+function early_cav_withdrawal()
+{
+
+}
+
+function combat_results()
+{
+
+} 
+
+function retreat()
+{
+
+} 
+
+function advance()
+{
+
+}
+
+function change_facing()
+{
+
+}
+
+function remove_step_loss_markers()
+{
+//Remove "Step Loss" markers.
+//Flip "2+ Step Loss" markers to "Step Loss" side
+log_h4("сняли маркеры Step Los")
+}
+
+function combat_phase_step_2()
+{
+	log_h4("combat_phase_step_2")
+	game.state = 'combat_phase_step_2'
+}
+
+states.combat_phase_step_2 = {
+	inactive: "Combat phase",
+	prompt()
+	{
+		view.prompt = `Надо вывести отряды на сколько-то там очков`
+		gen_action('end_combat_phase_step_2')
+	},
+	end_combat_phase_step_2()
+	{
+		remove_EXM_marker()
+		end_player_turn()
+	},
+}
+
+function combat_movement()
+{
+
+}
+
+function unit_consolidation()
+{
+
+}
+
+function replacement_absorption()
+{
+
+}
+
+function fieldworks_construction()
+{
+
+}
+
+function remove_EXM_marker()
+{
+	log_h4("remove_EXM_marker")
+	/*
+	- Remove EXM, 
+	- Preparatory Barrage Launched
+	- ABF Assault markers
+	*/
+}
+
+
+
+
 
 
 

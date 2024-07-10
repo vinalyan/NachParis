@@ -112,8 +112,9 @@ function on_update() {
 	action_button('end_preper_to_Assault_ABF', "End Preper to Assault")
 	action_button('end_movement_phase_step_1', "End Mandatory Withdrawal")
 	action_button('end_movement_phase_step_2', "End Move Phase")
-
-
+	action_button('end_resolution_of_assault', "end_resolution_of_assault")
+	action_button('end_combat_phase_step_1', "end_combat_phase_step_1")
+	action_button('combat', "combat")
 
 }
 
