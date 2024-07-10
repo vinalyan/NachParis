@@ -286,6 +286,34 @@ function current_scenario() {
 
 */
 
+//==Player Turn
+function goto_player_turn() {
+	set_active_player()
+	admin_phase()
+	barrage_phase()
+}
+
+function end_player_turn() {
+	log_h2(`${game.active}\nEnd Turn GT${game.gt_now}`)
+	if (game.phasing === GERMAN)
+		game.phasing = ALLIED
+	else
+		{
+			game.gt_now ++
+		 	game.phasing = GERMAN
+		}
+	if (game.gt_now <= game.gt_end)
+		{
+			goto_player_turn()
+		}
+	else
+		goto_end_game()
+
+}
+function goto_end_game() {
+	log_h1("End Game")
+}
+
 //===ADMIN PHASE
 
 function admin_phase(){
@@ -337,67 +365,130 @@ states.ABU_ABF = {
 	inactive: "Barrage phase",
 	prompt() {
 		view.prompt = `Постреляйте по юнитам и крепостям ABU_ABF.`
-		gen_action('end_ABF')		
+		gen_action('end_ABU_ABF')		
 	},
-	end_ABF()
+	end_ABU_ABF()
 	{
-		prepera_to_Assault_ABF()
+		preper_to_Assault_ABF()
 	},
 }
 
-function prepera_to_Assault_ABF()
+function preper_to_Assault_ABF()
 {
 	log_h3(`Заявляем штурм`)
-	game.state = 'Assault_ABF'
+	game.state = 'preper_to_Assault_ABF'
 }
 
-states.Assault_ABF = {
+states.preper_to_Assault_ABF = {
 	inactive: "Barrage phase",
 
 prompt() {
 		view.prompt = `Подготовьте отряды к штурму укреплений.`
-		gen_action('end_Assault_ABF')
+		gen_action('end_preper_to_Assault_ABF')
 		},
-		end_Assault_ABF()
+		end_preper_to_Assault_ABF()
+		{
+			movemen_phase()
+		},
+}
+
+//=== MOVEMENT PHASE
+function movemen_phase()
+{
+	log_h3(`III MOVEMENT`)
+	remove_FOM_markers()
+	movement_phase_step_1()
+}
+
+function remove_FOM_markers()
+{
+	log_h4(`FOM маркеры удалены`)
+
+}
+
+function movement_phase_step_1()
+{
+	log_h4(`С поля уеюбывают эти`)
+	game.state = 'movement_phase_step_1'
+}
+
+states.movement_phase_step_1 = {
+	inactive: "Movemen phase",
+
+prompt() {
+		view.prompt = `Надо вывести отряды на сколько-то там очков`
+		gen_action('end_movement_phase_step_1')
+		},
+		end_movement_phase_step_1()
+	{
+		movement_phase_step_2()
+	},
+}
+
+function movement_phase_step_2()
+{
+	game.state = 'movement_phase_step_2'
+}
+
+states.movement_phase_step_2 = {
+	inactive: "Movemen phase",
+
+prompt() {
+		view.prompt = `Выберете доступное действие`
+		movement()
+//		unit_arrivals()
+//		facing()
+//		specific_structures_destruction()
+//		railroad_network_delimitation()
+//		split_units()
+//		recombine_units()
+		gen_action('end_movement_phase_step_2')
+		},
+		end_movement_phase_step_2()
 	{
 		end_player_turn()
 	},
 }
 
-//=== MOVEMENT PHASE
-function muvemen_phase()
+function movement()
 {
-
+	log_h4('Дико подвигались юниты')
 }
+
+function unit_arrivals()
+{
+	log_h4('Отряды прибыли')
+}
+
+function facing()
+{
+	log_h4('Отряды покрутили жалами')
+}
+
+function specific_structures_destruction()
+{
+	log_h4('Поломали здания')
+}
+
+function railroad_network_delimitation()
+{
+	log_h4('Позахватывали ЖД')
+}
+
+function split_units()
+{
+	log_h4('Отряды объеденились')
+}
+
+function recombine_units()
+{
+	log_h4('Разделили отряды')
+}
+
 //=== COMBAT PHASE
 
 
-function goto_player_turn() {
-	set_active_player()
-	admin_phase()
-	barrage_phase()
-}
 
-function end_player_turn() {
-	log_h2(`${game.active}\nEnd Turn GT${game.gt_now}`)
-	if (game.phasing === GERMAN)
-		game.phasing = ALLIED
-	else
-		{
-			game.gt_now ++
-		 	game.phasing = GERMAN
-		}
-	if (game.gt_now <= game.gt_end)
-		{
-			goto_player_turn()
-		}
-	else
-		goto_end_game()
-
-}
-function goto_end_game() {
-	log_h1("End Game")
-}
 
 
 //=== COMMON LIBRARY ===

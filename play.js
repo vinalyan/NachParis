@@ -108,8 +108,12 @@ function on_update() {
 	}
     update_map()
     action_button("undo", "Undo")
-	action_button('end_ABF', "End ABF")
-	action_button('end_Assault_ABF', "End turn")
+	action_button('end_ABU_ABF', "End ABU BF")
+	action_button('end_preper_to_Assault_ABF', "End Preper to Assault")
+	action_button('end_movement_phase_step_1', "End Mandatory Withdrawal")
+	action_button('end_movement_phase_step_2', "End Move Phase")
+
+
 
 }
 
