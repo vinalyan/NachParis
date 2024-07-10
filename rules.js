@@ -330,9 +330,7 @@ function barrage_phase()
 function ABU_ABF()
 {
 	game.state = 'ABU_ABF'
-	log_h4(`Стреляет Арта  `)
-
-
+	log_h4(`Стреляет Арта `)
 }
 
 states.ABU_ABF = {
