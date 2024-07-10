@@ -115,7 +115,7 @@ function on_update() {
 	action_button('end_resolution_of_assault', "end_resolution_of_assault")
 	action_button('end_combat_phase_step_1', "end_combat_phase_step_1")
 	action_button('combat', "combat")
-
+	action_button('end_combat_phase_step_2', "end_combat_phase_step_2")
 }
 
 build_hexes()

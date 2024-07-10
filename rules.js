@@ -527,7 +527,7 @@ states.resolution_of_assault = {
 	inactive: "Combat phase",
 	prompt()
 	{
-		view.prompt = `Надо вывести отряды на сколько-то там очков`
+		view.prompt = `Необходимо реализовать штурмы`
 		gen_action('end_resolution_of_assault')
 	},
 	end_resolution_of_assault()
@@ -546,14 +546,14 @@ states.combat_phase_step_1 = {
 	inactive: "Combat phase",
 	prompt()
 	{
-		view.prompt = `Надо вывести отряды на сколько-то там очков`
+		view.prompt = `Проводим бои`
 		gen_action('end_combat_phase_step_1')
 		gen_action('combat')
 	},
 	end_combat_phase_step_1()
 	{
 		remove_step_loss_markers()
-		//combat_phase()
+		combat_phase_step_2()
 	},
 	combat()
 	{
