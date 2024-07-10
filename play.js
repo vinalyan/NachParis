@@ -107,9 +107,8 @@ function on_update() {
 		return setTimeout(on_update, 500)
 	}
     update_map()
-    action_button("end_ABU_ABF", "End ABU/ABF")
     action_button("undo", "Undo")
-	action_button('to_Assault_ABF', "To Assault")
+	action_button('end_ABF', "End ABF")
 }
 
 build_hexes()

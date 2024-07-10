@@ -1,6 +1,5 @@
 "use strict"
 
-
 var states = {}
 var game = null
 var view = null
@@ -9,7 +8,6 @@ const GERMAN = 'German'
 const ALLIED = 'Allied'
 const TIMEOUT = 250
 var timeout = 0
-
 
 
 // === STATE CACHES ===
@@ -122,17 +120,17 @@ exports.roles = [
 	"Allied",
 ]
 
-
 exports.setup = function (seed, scenario, options) {
 	load_state({
 		seed: seed,
-		GT: scenario.start,
 		state: null,
 		log: [],
 		undo: [],
 		summary: null,
 		scenario: scenario,
-		gt: 0,
+		gt_start: scenario.start,
+		gt_end: scenario.endstart,
+		gt_now: scenario.start,
 		units: new Array(unit_count).fill(0),
 	})
     // TODO тут надо накрутить обработку сценариев. 
@@ -213,7 +211,23 @@ function log_h4(msg) {
 	log(".h4 " + msg)
 }
 
-function s(action, argument) {
+exports.action = function (state, current, action, arg) {
+	timeout = Date.now() + TIMEOUT // don't think too long!
+	load_state(state)
+	let S = states[game.state]
+	if (S && action in S) {
+		S[action](arg, current)
+	} else {
+		if (action === 'undo' && game.undo && game.undo.length > 0)
+			pop_undo()
+		else
+			throw new Error("Invalid action: " + action)
+	}
+	return game
+}
+
+
+function gen_action(action, argument) {
 	if (argument !== undefined) {
 		if (!(action in view.actions)) {
 			view.actions[action] = [ argument ]
@@ -289,10 +303,8 @@ function goto_admin_stape_1()
 	{
 		log_h3(`Шаг 1. Бросок на дождик`)
 		log_h4(`Тут немцы в первый ход бросают на дождик`)
-
 		game.state = 'admin_stape_1'
 	}
-
 
 	//==Admin step 2
 function goto_admin_stape_2()
@@ -300,7 +312,6 @@ function goto_admin_stape_2()
 		log_h3(`Шаг 2. Проверка линий коммуникаци  `)
 		log_h4(`Линия коммуникаций фрицев заебок`)
 		log_h4(`Линия коммуникаций союзников тоже заебок`)
-
 		game.state = 'admin_stape_2'
 	}
 
@@ -315,17 +326,14 @@ function goto_admin_stape_3()
 function goto_barrage_phase()
 {
 	log_h2(`${game.active}\nАртналет `)
-
-//TODO тут как-то должен остановаиться
-// дальше тут появляеется кнопка to_Assault_ABF
-// по нажатию на нее переходим на след фазу. 
 	ABU_ABF()
 }
 
 function ABU_ABF()
 {
-	log_h3(`Стреляет Арта  `)
 	game.state = 'ABU_ABF'
+	log_h3(`Стреляет Арта  `)
+
 
 }
 
@@ -333,21 +341,32 @@ states.ABU_ABF = {
 	inactive: "Barrage phase",
 	prompt() {
 		view.prompt = `Заканчиваем с вашим этим ABU_ABF.`
-		gen_action('to_Assault_ABF')
-		
+		gen_action('end_ABF')		
 	},
-	to_Assault_ABF()
+	end_ABF()
 	{
-		Assault_ABF()
+		prepera_to_Assault_ABF()
 	},
 }
 
-function Assault_ABF()
+function prepera_to_Assault_ABF()
 {
 	log_h3(`Заявляем штурм`)
 	game.state = 'Assault_ABF'
 }
 
+states.Assault_ABF = {
+	inactive: "Barrage phase",
+
+prompt() {
+		view.prompt = `Заканчиваем с вашим этим ABU_ABF.`
+		gen_action('to_Assault_ABF')
+		},
+	to_Assault_ABF()
+	{
+		Assault_ABF()
+	},
+}
 
 //=== MOVEMENT PHASE
 
