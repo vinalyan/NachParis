@@ -91,6 +91,11 @@ header.your_turn { background-color: orange; }
 	background-image: url(units/G_7.ID_S3.png);
 }
 
+svg .hex.action {
+	stroke: red;
+	stroke-dasharray: 2 2;
+	stroke-dashoffset: 1;
+}
 
 svg .hex.selected {
 	stroke: yellow;
@@ -102,7 +107,6 @@ svg .hex.tip {
 	stroke-width: 3;
 	stroke-dasharray: 4 4;
 }
-
 
 
 

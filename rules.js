@@ -244,6 +244,10 @@ function gen_action_unit(u) {
 	gen_action('unit', u)
 }
 
+function gen_action_hex(x) {
+	gen_action('hex', x)
+}
+
 //SETUP
 
 const SCENARIOS = {
@@ -460,17 +464,38 @@ prompt() {
 //		split_units()
 //		recombine_units()
 		for (let u = 0; u < unit_count; ++u)
-//		{
-//			gen_action_unit(u)
-//		}
-
-//		gen_action_unit(0)
+		{
+			gen_action_unit(u)
+		}
+		for (let h = 0; h < 40; ++h) //TODO тут прям хардкод. Просто тренировался. 
+		{
+			gen_action_hex(h)
+		}
 
 		gen_action('end_movement_phase_step_2')
 		},
 		unit(u) {
 			set_toggle(game.selected, u)
+			console.log('добавили ' + u)
+			console.log('выбрано ' + game.selected)
 		},
+		hex(to) {
+			let list = game.selected
+			game.selected = []
+	//		push_undo()
+			game.summary[to] = (game.summary[to] | 0) + list.length
+			for (let who of list)
+			{
+				console.log('list ' + list)
+				console.log('who ' + who)
+				console.log('who ' + to)
+				console.log('game.units[who] ' + game.units[who])
+				set_unit_hex(who, to)
+				console.log(game.units)
+			}
+		},
+		
+
 		end_movement_phase_step_2()
 		{
 			combat_phase()
@@ -684,11 +709,22 @@ function remove_EXM_marker()
 
 
 
-
-
-
-
 //=== COMMON LIBRARY ===
+
+// insert item at index (faster than splice)
+function array_insert(array, index, item) {
+	for (let i = array.length; i > index; --i)
+		array[i] = array[i - 1]
+	array[index] = item
+
+}
+
+function array_remove(array, index) {
+	let n = array.length
+	for (let i = index + 1; i < n; ++i)
+		array[i - 1] = array[i]
+	array.length = n - 1
+}
 
 function clear_undo() {
 	if (game.undo.length > 0)
@@ -719,3 +755,39 @@ function pop_undo() {
 	state.undo = save_undo
 	load_state(state)
 }
+
+function set_add(set, item) {
+	let a = 0
+	let b = set.length - 1
+	while (a <= b) {
+		let m = (a + b) >> 1
+		let x = set[m]
+		if (item < x)
+			b = m - 1
+		else if (item > x)
+			a = m + 1
+		else
+			return
+	}
+	array_insert(set, a, item)
+}
+
+function set_toggle(set, item) {
+	let a = 0
+	let b = set.length - 1
+	while (a <= b) {
+		let m = (a + b) >> 1
+		let x = set[m]
+		if (item < x)
+			b = m - 1
+		else if (item > x)
+			a = m + 1
+		else {
+			array_remove(set, m)
+			return
+		}
+	}
+	array_insert(set, a, item)
+}
+
+

@@ -39,6 +39,21 @@ function is_unit_selected(unit) {
 	return view.selected === unit
 }
 
+function is_any_hex_action(hex) {
+	if (view.actions && view.actions.hex && view.actions.hex.includes(hex))
+		return true
+	return false
+}
+
+
+function is_hex_selected(hex) {
+	if (hex === view.pursuit || hex === view.battle || hex === view.selected_hexes)
+		return true
+	if (Array.isArray(view.selected_hexes) && view.selected_hexes.includes(hex))
+		return true
+	return false
+}
+
 // количество вертрикальных гексов
 const map_v = 8
 // количество горизональных геков
@@ -160,10 +175,17 @@ function update_map() {
 				layout_stack(stack_list[hex], hex, ui.hex_x[u],ui.hex_y[u],60, -1)
 			}
         }
-
+	for (let hex = 0; hex < stack_list.length; ++hex) {
+		let start_x = ui.hex_x[hex]
+		let start_y = ui.hex_y[hex]
+		let wrap = 6
+		if (ui.hexes[hex]) {
+			ui.hexes[hex].classList.toggle("action", is_any_hex_action(hex))
+			ui.hexes[hex].classList.toggle("selected", is_hex_selected(hex))
+		}
+	
+	}	
 }
-
-
 
 //количество отрядов в гексе.
 
@@ -202,7 +224,7 @@ function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
             e.style.zIndex = 100 + z
 
 //			update_unit(e, u)
-//			e.classList.toggle("action", !view.battle && is_unit_action(u))
+			e.classList.toggle("action", !view.battle && is_unit_action(u))
 			e.classList.toggle("selected", !view.battle && is_unit_selected(u))
         }
 }
