@@ -6,9 +6,6 @@ const svgNS = "http://www.w3.org/2000/svg"
 const round = Math.round
 const sqrt = Math.sqrt
 
-///TODO временные файлы убрать. Херабота должна быть в файле rules.
-
-let unit_states = []
 
 
 /// тут заканчиваются временные переменные
@@ -30,6 +27,16 @@ const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
 
 function unit_hex(u) {
 	return (view.units[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
+}
+
+function is_unit_action(unit) {
+	return !!(view.actions && view.actions.unit && view.actions.unit.includes(unit))
+}
+
+function is_unit_selected(unit) {
+	if (Array.isArray(view.selected))
+		return view.selected.includes(unit)
+	return view.selected === unit
 }
 
 // количество вертрикальных гексов
@@ -124,7 +131,7 @@ function build_units() {
 	function build_unit(u) {
 		//let nationality = is_axis_unit(u) ? "axis" : "allied"   
 		let elt = ui.units[u] = document.createElement("div")
-		elt.className = `unit`
+		elt.className = `unit u${u}`
 		elt.addEventListener("mousedown", on_click_unit)
 		elt.addEventListener("mouseenter", on_focus_unit)
 		elt.addEventListener("mouseleave", on_blur)
@@ -138,20 +145,24 @@ function build_units() {
 build_units()
 
 function update_map() {
-    //for (let i = 0; i < stack_list.length; ++i) {
-	//	stack_list[i] = []
-	//}
+    for (let i = 0; i < stack_list.length; ++i) {
+		stack_list[i].length = 0
+	}
 	for (let u = 0; u < unit_count; ++u) 
         {
             let hex = unit_hex(u)
             let e = ui.units[u]
 		    if (!ui.units_holder.contains(e))
-            ui.units_holder.appendChild(e)    
-            e.stack = stack_list[hex]
-            layout_stack(stack_list[hex], hex, ui.hex_x[u],ui.hex_y[u],60, -1)
+            ui.units_holder.appendChild(e)  
+			if(hex){
+				stack_list[hex].push(u)
+				e.stack = stack_list[hex]
+				layout_stack(stack_list[hex], hex, ui.hex_x[u],ui.hex_y[u],60, -1)
+			}
         }
 
 }
+
 
 
 //количество отрядов в гексе.
@@ -161,10 +172,8 @@ function update_map() {
 //отрисовываем отряды в гексах
 function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
 	for (let i = 0; i < stack.length; ++i) {
-        if(stack[i].length != 0)  //не пустой гекс. TODO переделать. 
-        {
-            let u = stack[i]  //5 
-            let e = ui.units[u] //TODO заменить ui.units[u]
+            let u = stack[i]  
+            let e = ui.units[u] 
             let x, y, z
 
             if (stack === ui.focus) {
@@ -192,10 +201,12 @@ function layout_stack(stack, hex, start_x, start_y, wrap, xdir) {
             e.style.left = x + "px"
             e.style.zIndex = 100 + z
 
- //           update_unit(e, u)
+//			update_unit(e, u)
+//			e.classList.toggle("action", !view.battle && is_unit_action(u))
+			e.classList.toggle("selected", !view.battle && is_unit_selected(u))
         }
-	}
 }
+
 
 //разворачиваем стек
 function focus_stack(stack) {

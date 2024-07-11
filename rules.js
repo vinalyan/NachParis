@@ -105,6 +105,7 @@ function is_allied_player() {
 	return game.active === ALLIED
 }
 
+
 // === PUBLIC FUNCTIONS ===
 
 exports.scenarios = [
@@ -149,7 +150,7 @@ exports.view = function(state, current) {
 		end: scenario.end,
 		units: game.units,
 	} 
-	console.log('exports.view')
+	console.log('LOG exports.view')
 	return common_view(current)
 }
 
@@ -451,19 +452,29 @@ states.movement_phase_step_2 = {
 
 prompt() {
 		view.prompt = `Выберете доступное действие`
-		movement()
+//		movement()
 //		unit_arrivals()
 //		facing_unit()
 //		specific_structures_destruction()
 //		railroad_network_delimitation()
 //		split_units()
 //		recombine_units()
+		for (let u = 0; u < unit_count; ++u)
+//		{
+//			gen_action_unit(u)
+//		}
+
+//		gen_action_unit(0)
+
 		gen_action('end_movement_phase_step_2')
 		},
+		unit(u) {
+			set_toggle(game.selected, u)
+		},
 		end_movement_phase_step_2()
-	{
-		combat_phase()
-	},
+		{
+			combat_phase()
+		},
 }
 
 function movement()
