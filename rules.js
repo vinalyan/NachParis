@@ -7,7 +7,13 @@ var view = null
 const GERMAN = 'German'
 const ALLIED = 'Allied'
 const TIMEOUT = 250
+
+const hexw = 9
+const hexh = 12
+const hexnext = [ 1, hexw-2, hexw-1, -1, -hexw, -(hexw-1) ]
+
 var timeout = 0
+
 
 
 // === STATE CACHES ===
@@ -35,6 +41,34 @@ function load_state(state) {
 		update_aliases()
 	}
 }
+
+/// HEXES
+
+function debug_hexes3(n, list) {
+	console.log("--", n, "--")
+	list = list.map((x,i) => hex_exists[i] ? x : "")
+	for (let y = 0; y < hexh; ++y)
+		console.log("".padStart(y*2," ") + list.slice(y*hexw, (y+1)*hexw).map(x=>String(x).padStart(3, ' ')).join(" "))
+}
+
+function debug_hexes(n, list) {
+	console.log("--", n, "--")
+	list = list.map((x,i) => hex_exists[i] ? x : "")
+	for (let y = 0; y < hexh; ++y)
+		console.log("".padStart(y," ") + list.slice(y*hexw, (y+1)*hexw).map(x=>String(x).padStart(2, ' ')).join(""))
+}
+
+function is_hex_or_adjacent_to(x, where) {
+	if (x === where)
+		return true
+	for (let s = 0; s < 6; ++s) {
+		let y = where + hexnext[s]
+		if (x === y)  //TODO тут в оригинале немного по другому. 
+			return true
+	}
+	return false
+}
+
 
 ///UNIT STATE 
 
@@ -473,10 +507,18 @@ prompt() {
 			gen_action_unit(u)
 		}
 	// TODO тут я добавил гексы. Но надо как-то изящнее
-		for (let h = 0; h < 40; ++h) 
-		{
-			gen_action_hex(h)
-		}
+
+		if (game.selected.length == 1) {
+			console.log('Исходный гекс ' + unit_hex(game.selected[0]))			
+			for (let h = 0; h < 72; ++h) 
+				{
+					if(is_hex_or_adjacent_to(h, unit_hex(game.selected[0])) )
+					{
+						gen_action_hex(h)
+						console.log(h)
+					}
+				}
+			}	
 
 		gen_action('end_movement_phase_step_2')
 		},

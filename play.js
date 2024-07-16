@@ -84,7 +84,7 @@ function build_hexes() {
     let hex_v = (hex_w * sqrt(3))/2
 
     function add_hex(x, y) {
-		let gap = 5
+		let gap = 3
 		return [
 			[ round(x-hex_h/2 + gap), round(y-hex_v + gap) ],
 			[ round(x-hex_h + gap),         round(y) ],
@@ -116,6 +116,7 @@ function build_hexes() {
 				hex.addEventListener("mouseenter", on_focus_hex)
 				hex.addEventListener("mouseleave", on_blur)        
                 hex.hex = hex_id
+				hex.textContent = hex_id
                 document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
             }
 	}
