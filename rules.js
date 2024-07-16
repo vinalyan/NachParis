@@ -494,7 +494,10 @@ prompt() {
 			game.summary[to] = (game.summary[to] | 0) + list.length
 			for (let who of list)
 			{
+				let start_hex = unit_hex(who)
 				set_unit_hex(who, to)
+				if (start_hex != unit_hex(who))
+					log(`${who} moved\nfrom #${start_hex}\nto #${unit_hex(who)}.`)
 			}
 		},
 		
