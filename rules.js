@@ -468,11 +468,14 @@ prompt() {
 //		railroad_network_delimitation()
 //		split_units()
 //		recombine_units()
+
+	//TODO тут добавляем доступные юниты. 
 		for (let u = 0; u < unit_count; ++u)
 		{
 			gen_action_unit(u)
 		}
-		for (let h = 0; h < 40; ++h) //TODO тут прям хардкод. Просто тренировался. 
+	// TODO тут я добавил гексы. Но надо как-то изящнее
+		for (let h = 0; h < 40; ++h) 
 		{
 			gen_action_hex(h)
 		}
@@ -481,15 +484,13 @@ prompt() {
 		},
 		unit(u) {
 			set_toggle(game.selected, u)
-			console.log('выбран ' + game.selected)
 			view.selected = game.selected
-			console.log('view.selected ' + view.selected)
 
 		},
 		hex(to) {
 			let list = game.selected
 			game.selected = []
-	//		push_undo()
+			push_undo()
 			game.summary[to] = (game.summary[to] | 0) + list.length
 			for (let who of list)
 			{
@@ -726,6 +727,31 @@ function array_remove(array, index) {
 	for (let i = index + 1; i < n; ++i)
 		array[i - 1] = array[i]
 	array.length = n - 1
+}
+
+function object_copy(original) {
+	if (Array.isArray(original)) {
+		let n = original.length
+		let copy = new Array(n)
+		for (let i = 0; i < n; ++i) {
+			let v = original[i]
+			if (typeof v === "object" && v !== null)
+				copy[i] = object_copy(v)
+			else
+				copy[i] = v
+		}
+		return copy
+	} else {
+		let copy = {}
+		for (let i in original) {
+			let v = original[i]
+			if (typeof v === "object" && v !== null)
+				copy[i] = object_copy(v)
+			else
+				copy[i] = v
+		}
+		return copy
+	}
 }
 
 function clear_undo() {
