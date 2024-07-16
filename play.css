@@ -91,6 +91,14 @@ header.your_turn { background-color: orange; }
 	background-image: url(units/G_7.ID_S3.png);
 }
 
+.unit.action {
+	box-shadow: 0 0 0 2px white;
+}
+
+.unit.selected {
+	box-shadow: 0 0 0 2px yellow;
+}
+
 svg .hex.action {
 	stroke: red;
 	stroke-dasharray: 2 2;

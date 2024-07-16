@@ -172,7 +172,7 @@ function update_map() {
 			if(hex){
 				stack_list[hex].push(u)
 				e.stack = stack_list[hex]
-				layout_stack(stack_list[hex], hex, ui.hex_x[u],ui.hex_y[u],60, -1)
+				layout_stack(stack_list[hex], hex, ui.hex_x[hex],ui.hex_y[hex],60, -1)
 			}
         }
 	for (let hex = 0; hex < stack_list.length; ++hex) {

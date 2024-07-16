@@ -150,8 +150,13 @@ exports.view = function(state, current) {
 		end: scenario.end,
 		units: game.units,
 	} 
+
+	if (current === game.active)
+		view.selected = game.selected
+
 	console.log('LOG exports.view')
 	return common_view(current)
+
 }
 
 
@@ -476,8 +481,10 @@ prompt() {
 		},
 		unit(u) {
 			set_toggle(game.selected, u)
-			console.log('добавили ' + u)
-			console.log('выбрано ' + game.selected)
+			console.log('выбран ' + game.selected)
+			view.selected = game.selected
+			console.log('view.selected ' + view.selected)
+
 		},
 		hex(to) {
 			let list = game.selected
@@ -486,12 +493,7 @@ prompt() {
 			game.summary[to] = (game.summary[to] | 0) + list.length
 			for (let who of list)
 			{
-				console.log('list ' + list)
-				console.log('who ' + who)
-				console.log('who ' + to)
-				console.log('game.units[who] ' + game.units[who])
 				set_unit_hex(who, to)
-				console.log(game.units)
 			}
 		},
 		
