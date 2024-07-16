@@ -153,8 +153,6 @@ exports.view = function(state, current) {
 
 	if (current === game.active)
 		view.selected = game.selected
-
-	console.log('LOG exports.view')
 	return common_view(current)
 
 }
@@ -484,8 +482,6 @@ prompt() {
 		},
 		unit(u) {
 			set_toggle(game.selected, u)
-			view.selected = game.selected
-
 		},
 		hex(to) {
 			let list = game.selected

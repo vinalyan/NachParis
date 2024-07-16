@@ -70,13 +70,12 @@ for (let i = 0; i < stack_list.length; ++i)
 function build_hexes() {
 
     //Смещение. По сути начальные кооодиты
-    let xoff = 172
+    let xoff = 169
     let yoff = 442
 
     //Радиус описывающей гекс окружности. Нужен для описания смещений. 
     let hex_w = 71.5
     //Зазор, чтобы гексы не наезжали друг на друга
-    let gap = 10
 
     //TODO сделать зазор между гексами. 
     // Половина длины по горизонтале 
@@ -85,14 +84,14 @@ function build_hexes() {
     let hex_v = (hex_w * sqrt(3))/2
 
     function add_hex(x, y) {
- 
+		let gap = 5
 		return [
-			[ round(x-hex_h/2), round(y-hex_v) ],
-			[ round(x-hex_h),         round(y) ],
-			[ round(x-hex_h/2), round(y+hex_v) ],
-			[ round(x+hex_h/2), round(y+hex_v) ],
-			[ round(x+hex_h),         round(y) ],
-			[ round(x+hex_h/2), round(y-hex_v) ]
+			[ round(x-hex_h/2 + gap), round(y-hex_v + gap) ],
+			[ round(x-hex_h + gap),         round(y) ],
+			[ round(x-hex_h/2 + gap), round(y+hex_v -gap) ],
+			[ round(x+hex_h/2 - gap), round(y+hex_v-gap) ],
+			[ round(x+hex_h - gap),         round(y) ],
+			[ round(x+hex_h/2 - gap), round(y-hex_v + gap) ]
 		].join(" ")
 	}
 
