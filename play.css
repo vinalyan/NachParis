@@ -54,7 +54,7 @@ header.your_turn { background-color: orange; }
 }
 
 .unit{
-	background-image: url(units/G_7.ID_S1.png);
+	background-image: url(units/G_7.ID_S4.png);
 	background-size: 75px 75px;
 	height: 100%;
 	width: 100%;
@@ -69,12 +69,6 @@ header.your_turn { background-color: orange; }
 	box-shadow: 0 0 4px 3px hsl(345, 20%, 20%);
 }
 
-/*
-.unit{
-	transform: translate(345px, -830px);
-}
-
-*/ 
 .unit.S4{
 	background-image: url(units/G_7.ID_S4.png);
 }
@@ -98,6 +92,15 @@ header.your_turn { background-color: orange; }
 .unit.selected {
 	box-shadow: 0 0 0 2px yellow;
 }
+
+.unit.u0 { transform: rotate(0deg); }
+.unit.u1 { transform: rotate(60deg); }
+.unit.u2 { transform: rotate(120deg); }
+.unit.u3 { transform: rotate(180deg); }
+.unit.u4 { transform: rotate(240deg); }
+.unit.u5 { transform: rotate(300deg); }
+
+
 
 svg .hex.action {
 	stroke: red;
@@ -131,3 +134,4 @@ TODO убрать когда отлажусь.
 	pointer-events: none; /* Чтобы элемент не мешал кликам мыши */
 	z-index: 500;
 }
+

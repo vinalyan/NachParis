@@ -9,7 +9,7 @@ const ALLIED = 'Allied'
 const TIMEOUT = 250
 
 const hexw = 9
-const hexh = 12
+const hexh = 8
 const hexnext = [ 1, hexw-2, hexw-1, -1, -hexw, -(hexw-1) ]
 
 var timeout = 0
@@ -44,6 +44,20 @@ function load_state(state) {
 
 /// HEXES
 
+/*
+1. Пишем конвертилку преобразования номера гекса в координаты и обратно. 
+координаты две [q, r] 
+ 	q - col - номер колонки
+	r- row - номер столбца
+2. Преобразование номера N гекса в координаты
+		q = N/hexh
+		r = N%hexh
+3. Преобразование координат в номер гекса
+		N = q*Hexh + r
+4. Имея координаты гесов можно проводить вычисления. 
+*/
+
+
 function debug_hexes3(n, list) {
 	console.log("--", n, "--")
 	list = list.map((x,i) => hex_exists[i] ? x : "")
@@ -58,6 +72,7 @@ function debug_hexes(n, list) {
 		console.log("".padStart(y," ") + list.slice(y*hexw, (y+1)*hexw).map(x=>String(x).padStart(2, ' ')).join(""))
 }
 
+
 function is_hex_or_adjacent_to(x, where) {
 	if (x === where)
 		return true
@@ -67,6 +82,47 @@ function is_hex_or_adjacent_to(x, where) {
 			return true
 	}
 	return false
+}
+
+/*
+1. Пишем конвертилку преобразования номера гекса в координаты и обратно. 
+координаты две [q, r] 
+ 	q - col - номер колонки
+	r- row - номер столбца
+2. Преобразование номера N гекса в координаты
+		q = N/hexh
+		r = N%hexh
+3. Преобразование координат в номер гекса
+		N = q*Hexh + r
+4. Имея координаты гесов можно проводить вычисления. 
+*/
+
+function hex_to_coordinates(n){
+	let q = Math.floor(n / hexh)
+	let r = n % hexh
+	let s = 0 - q - r
+	console.log(n + "->" + q + ','+ r+ ','+s)
+	return {q,r,s}
+}
+
+function coordinates_to_hex(q, c)
+{
+	return q*hexh+c
+}
+
+
+function get_adjacent_hexes(h){
+	let hexes = []
+	let coord = hex_to_coordinates(h)
+	hexes[0] = h
+	hexes[1] = coordinates_to_hex(coord.q,coord.r-1)
+	hexes[2] = coordinates_to_hex(coord.q+1,coord.r)
+	hexes[3] = coordinates_to_hex(coord.q+1,coord.r+1)
+	hexes[4] = coordinates_to_hex(coord.q,coord.r+1)
+	hexes[5] = coordinates_to_hex(coord.q-1,coord.r+1)
+	hexes[6] = coordinates_to_hex(coord.q-1,coord.r)
+	console.log(h + "->" + hexes)
+	return hexes
 }
 
 
@@ -509,14 +565,10 @@ prompt() {
 	// TODO тут я добавил гексы. Но надо как-то изящнее
 
 		if (game.selected.length == 1) {
-			console.log('Исходный гекс ' + unit_hex(game.selected[0]))			
-			for (let h = 0; h < 72; ++h) 
+			let hex = unit_hex(game.selected[0])		
+			for (let h of get_adjacent_hexes(hex)) 
 				{
-					if(is_hex_or_adjacent_to(h, unit_hex(game.selected[0])) )
-					{
-						gen_action_hex(h)
-						console.log(h)
-					}
+					gen_action_hex(h)
 				}
 			}	
 
