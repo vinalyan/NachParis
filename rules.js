@@ -101,15 +101,24 @@ function is_hex_or_adjacent_to(x, where) {
 
 function hex_to_coordinates(n){
 	let q = Math.floor(n / hexh)
-	let r = n % hexh
-	let s = 0 - q - r
+	let r
+	if (n/hexh%2==0) {
+		r = n % hexh*2
+	} else {
+		r = n % hexh*2 +1
+	}
 //	console.log(n + "->" + q + ','+ r+ ','+s)
-	return {q,r,s}
+	return {q,r}
 }
 
 function coordinates_to_hex(q, c)
 {
-	return q*hexh+c
+	if (q%2==0) {
+		return q*hexh+c/2
+	} else {
+		return q*hexh+(c-1)/2
+
+	}
 }
 
 
