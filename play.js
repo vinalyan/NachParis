@@ -54,6 +54,20 @@ function is_hex_selected(hex) {
 	return false
 }
 
+//TODO выпилить это штука тут нужна для дебага
+
+function hex_to_coordinates(h){
+	let q = Math.floor(h / map_v)
+	let r
+	if (Math.floor(h / map_v)%2==1) {
+		r = h% map_v*2
+	} else {
+		r = h % map_v*2 +1
+	}
+//	console.log(n + "->" + q + ','+ r+ ','+s)
+	return {q,r}
+}
+
 // количество вертрикальных гексов
 const map_v = 8
 // количество горизональных геков
@@ -269,7 +283,7 @@ function on_focus_unit(evt) {
 
 function on_focus_hex(evt) {
 	let hex = evt.target.hex
-    let text = ui.hexes[hex].hex
+    let text = ui.hexes[hex].hex +'->'+ hex_to_coordinates(hex).q + ','+ hex_to_coordinates(hex).r
 	document.getElementById("status").textContent = text
 
 }

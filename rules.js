@@ -99,25 +99,26 @@ function is_hex_or_adjacent_to(x, where) {
 4. Имея координаты гесов можно проводить вычисления. 
 */
 
-function hex_to_coordinates(n){
-	let q = Math.floor(n / hexh)
+
+function hex_to_coordinates(h){
+	let q = Math.floor(h / hexh)
 	let r
-	if (n/hexh%2==0) {
-		r = n % hexh*2
+	if (Math.floor(h / hexh)%2==1) {
+		r = h% hexh*2
 	} else {
-		r = n % hexh*2 +1
+		r = h % hexh*2 +1
 	}
 //	console.log(n + "->" + q + ','+ r+ ','+s)
+	console.log(h + "->" + q+','+r)
 	return {q,r}
 }
 
 function coordinates_to_hex(q, c)
 {
-	if (q%2==0) {
-		return q*hexh+c/2
+	if (q%2==1) {
+		return q*hexh+Math.floor(c / 2)
 	} else {
-		return q*hexh+(c-1)/2
-
+		return q*hexh+(Math.floor((c-1) / 2))
 	}
 }
 
@@ -126,12 +127,12 @@ function get_adjacent_hexes(h){
 	let hexes = []
 	let coord = hex_to_coordinates(h)
 	hexes[0] = h
-	hexes[1] = coordinates_to_hex(coord.q,coord.r-1)
-	hexes[2] = coordinates_to_hex(coord.q+1,coord.r)
-	hexes[3] = coordinates_to_hex(coord.q+1,coord.r+1)
-	hexes[4] = coordinates_to_hex(coord.q,coord.r+1)
+	hexes[1] = coordinates_to_hex(coord.q,coord.r-2)
+	hexes[2] = coordinates_to_hex(coord.q+1,coord.r-1)
+	hexes[3] = coordinates_to_hex(coord.q+1,coord.r+2)
+	hexes[4] = coordinates_to_hex(coord.q,coord.r+2)
 	hexes[5] = coordinates_to_hex(coord.q-1,coord.r+1)
-	hexes[6] = coordinates_to_hex(coord.q-1,coord.r)
+	hexes[6] = coordinates_to_hex(coord.q-1,coord.r-1)
 	console.log(h + "->" + hexes)
 	return hexes
 }
@@ -606,7 +607,7 @@ prompt() {
 
 		if (game.selected.length == 1) {
 			let hex = unit_hex(game.selected[0])				
-			for (let h of get_hexes_from_distanse(hex,2)) 
+			for (let h of get_adjacent_hexes(hex)) 
 				{
 					gen_action_hex(h)
 				}
