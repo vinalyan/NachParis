@@ -10,6 +10,8 @@ const TIMEOUT = 250
 
 const hexw = 9
 const hexh = 8
+const MAP = hexw*hexh
+
 const hexnext = [ 1, hexw-2, hexw-1, -1, -hexw, -(hexw-1) ]
 
 var timeout = 0
@@ -77,7 +79,7 @@ function is_hex_or_adjacent_to(x, where) {
 	if (x === where)
 		return true
 	for (let s = 0; s < 6; ++s) {
-		let y = where + hexnext[s]
+		let y = where + hexnext[s] //- Math.floor(where / hexh)%2
 		if (x === y)  //TODO тут в оригинале немного по другому. 
 			return true
 	}
@@ -101,7 +103,7 @@ function hex_to_coordinates(n){
 	let q = Math.floor(n / hexh)
 	let r = n % hexh
 	let s = 0 - q - r
-	console.log(n + "->" + q + ','+ r+ ','+s)
+//	console.log(n + "->" + q + ','+ r+ ','+s)
 	return {q,r,s}
 }
 
@@ -125,6 +127,35 @@ function get_adjacent_hexes(h){
 	return hexes
 }
 
+//Получаем все гексы на дистации dist от гекса hex
+function get_hexes_from_distanse(hex, dist){
+	let hexes = []
+
+	for (let h = 0; h <=MAP; h++) {
+		let coord_h = hex_to_coordinates(h)
+		let coord_hex = hex_to_coordinates(hex)
+
+		let Q = coord_h.q - coord_hex.q
+		let R = coord_h.r - coord_hex.r
+		let S = coord_h.s - coord_hex.s
+
+		let conditionQ = Q >= -dist && Q <= dist 
+		let conditionR = R >= -dist && R <= dist
+		let conditionS = S >= -dist && S <= dist
+
+		if (conditionQ && conditionR && conditionS) {
+			console.log('---------')		
+			console.log('hex '+hex+'->'+coord_hex.q+','+coord_hex.r+','+coord_hex.s)				
+			console.log("h "+h+'->'+coord_h.q+','+coord_h.r +','+coord_h.s)			
+			console.log("h-hex ->"+Q+','+R+','+S)
+
+
+			hexes.push(h)
+		}
+}
+	return hexes
+	
+}
 
 ///UNIT STATE 
 
@@ -565,12 +596,13 @@ prompt() {
 	// TODO тут я добавил гексы. Но надо как-то изящнее
 
 		if (game.selected.length == 1) {
-			let hex = unit_hex(game.selected[0])		
-			for (let h of get_adjacent_hexes(hex)) 
+			let hex = unit_hex(game.selected[0])				
+			for (let h of get_hexes_from_distanse(hex,2)) 
 				{
 					gen_action_hex(h)
 				}
-			}	
+				
+		}
 
 		gen_action('end_movement_phase_step_2')
 		},
