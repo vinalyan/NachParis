@@ -5,7 +5,9 @@
 const svgNS = "http://www.w3.org/2000/svg"
 const round = Math.round
 const sqrt = Math.sqrt
-
+const max = Math.max
+const min = Math.min
+const abs = Math.abs
 
 
 /// тут заканчиваются временные переменные
@@ -56,26 +58,39 @@ function is_hex_selected(hex) {
 
 //TODO выпилить это штука тут нужна для дебага
 
-function hex_to_coordinates(h){
-	let q = Math.floor(h / map_v)
+/*function hex_to_coordinates(h){
+	let q = Math.floor(h / hexh)
 	let r
-	if (Math.floor(h / map_v)%2==1) {
-		r = h% map_v*2
+	if (Math.floor(h / hexh)%2==1) {
+		r = h% hexh*2
 	} else {
-		r = h % map_v*2 +1
+		r = h % hexh*2 +1
 	}
-//	console.log(n + "->" + q + ','+ r+ ','+s)
-	return {q,r}
+	let s = 0-q-r
+	return {q,r,s}
+}*/
+
+function hex_to_coordinates(h){
+	let q = Math.floor(h / hexh)
+	let r = h% hexh
+	let s = 0-q-r
+	return {q,r,s}
+}
+
+function calc_distance(a, b) {
+	let ax = a % hexh, ay = (a / hexh)|0, az = -ax - ay
+	let bx = b % hexh, by = (b / hexh)|0, bz = -bx - by
+	return max(abs(bx-ax), abs(by-ay))
 }
 
 // количество вертрикальных гексов
-const map_v = 8
+const hexh = 8
 // количество горизональных геков
-const map_h = 9
+const hexw = 9
 //количество юнитов
 const unit_count = 10
 
-let stack_list = new Array(map_v * map_h)
+let stack_list = new Array(hexh * hexw)
 for (let i = 0; i < stack_list.length; ++i)
 	stack_list[i] = []
 
@@ -115,11 +130,11 @@ function build_hexes() {
         Потом горизонтальные. 
         При смещении по горизонтале учитываем, что 
     */
-        for(let num_h = 0; num_h < map_h; ++num_h){
+        for(let num_h = 0; num_h < hexw; ++num_h){
             let x = (num_h * (hex_h + hex_h/2)) + xoff         
-            for (let num_v = 0; num_v < map_v; ++num_v) {
+            for (let num_v = 0; num_v < hexh; ++num_v) {
                 let y = (num_v * hex_v*2) - (hex_v*(num_h%2)) + yoff //тут учитываем, что каждая четная колонка ниже нечетной
-                let hex_id = num_h * map_v + num_v
+                let hex_id = num_h * hexh + num_v
                 let hex = ui.hexes[hex_id] = document.createElementNS(svgNS, "polygon") 
                 ui.hex_x[hex_id] = round(x)	
                 ui.hex_y[hex_id] = round(y)
@@ -130,8 +145,11 @@ function build_hexes() {
 				hex.addEventListener("mouseenter", on_focus_hex)
 				hex.addEventListener("mouseleave", on_blur)        
                 hex.hex = hex_id
-				hex.textContent = hex_id
+
+				// Создание текстового элемента для отображения текста в шестиугольнике
+
                 document.getElementById("mapsvg").getElementById("hexes").appendChild(hex)
+
             }
 	}
     ui.loaded = true;
@@ -283,7 +301,8 @@ function on_focus_unit(evt) {
 
 function on_focus_hex(evt) {
 	let hex = evt.target.hex
-    let text = ui.hexes[hex].hex +'->'+ hex_to_coordinates(hex).q + ','+ hex_to_coordinates(hex).r
+    let text = ui.hexes[hex].hex +'->'+ hex_to_coordinates(hex).q + ','+ hex_to_coordinates(hex).r+','+hex_to_coordinates(hex).s + 
+		'\nDist ' + calc_distance(hex,35)
 	document.getElementById("status").textContent = text
 
 }
@@ -389,6 +408,6 @@ document.addEventListener('mousemove', (event) => {
 
     coordsDiv.style.left = `${mouseX + 10}px`;
     coordsDiv.style.top = `${mouseY + 10}px`;
-    coordsDiv.textContent = `X: ${mouseX}, Y: ${mouseY}`;
+    coordsDiv.textContent = `X: ${mouseX}, Y: ${mouseY}}` ;
 });
 

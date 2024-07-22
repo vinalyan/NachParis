@@ -10,9 +10,10 @@ const TIMEOUT = 250
 
 const hexw = 9
 const hexh = 8
-const MAP = hexw*hexh
+const mapsize = hexw*hexh
+const max = Math.max
+const abs = Math.abs
 
-const hexnext = [ 1, hexw-2, hexw-1, -1, -hexw, -(hexw-1) ]
 
 var timeout = 0
 
@@ -46,126 +47,31 @@ function load_state(state) {
 
 /// HEXES
 
-/*
-1. Пишем конвертилку преобразования номера гекса в координаты и обратно. 
-координаты две [q, r] 
- 	q - col - номер колонки
-	r- row - номер столбца
-2. Преобразование номера N гекса в координаты
-		q = N/hexh
-		r = N%hexh
-3. Преобразование координат в номер гекса
-		N = q*Hexh + r
-4. Имея координаты гесов можно проводить вычисления. 
-*/
-
-
-function debug_hexes3(n, list) {
-	console.log("--", n, "--")
-	list = list.map((x,i) => hex_exists[i] ? x : "")
-	for (let y = 0; y < hexh; ++y)
-		console.log("".padStart(y*2," ") + list.slice(y*hexw, (y+1)*hexw).map(x=>String(x).padStart(3, ' ')).join(" "))
-}
-
-function debug_hexes(n, list) {
-	console.log("--", n, "--")
-	list = list.map((x,i) => hex_exists[i] ? x : "")
-	for (let y = 0; y < hexh; ++y)
-		console.log("".padStart(y," ") + list.slice(y*hexw, (y+1)*hexw).map(x=>String(x).padStart(2, ' ')).join(""))
-}
-
-
-function is_hex_or_adjacent_to(x, where) {
-	if (x === where)
-		return true
-	for (let s = 0; s < 6; ++s) {
-		let y = where + hexnext[s] //- Math.floor(where / hexh)%2
-		if (x === y)  //TODO тут в оригинале немного по другому. 
-			return true
-	}
-	return false
-}
-
-/*
-1. Пишем конвертилку преобразования номера гекса в координаты и обратно. 
-координаты две [q, r] 
- 	q - col - номер колонки
-	r- row - номер столбца
-2. Преобразование номера N гекса в координаты
-		q = N/hexh
-		r = N%hexh
-3. Преобразование координат в номер гекса
-		N = q*Hexh + r
-4. Имея координаты гесов можно проводить вычисления. 
-*/
-
-
 function hex_to_coordinates(h){
 	let q = Math.floor(h / hexh)
-	let r
-	if (Math.floor(h / hexh)%2==1) {
-		r = h% hexh*2
-	} else {
-		r = h % hexh*2 +1
-	}
-//	console.log(n + "->" + q + ','+ r+ ','+s)
-	console.log(h + "->" + q+','+r)
-	return {q,r}
+	let r = h% hexh - Math.floor((q+1) / 2)
+	let s = 0-q-r
+	return {q,r,s}
 }
 
-function coordinates_to_hex(q, c)
+function calc_distance(a, b) {
+	let hex_a = hex_to_coordinates(a)
+	let hex_b = hex_to_coordinates(b)
+	return max(abs(hex_b.q-hex_a.q), abs(hex_b.r-hex_a.r), abs(hex_b.s-hex_a.s))
+}
+
+function get_adjacents(hex)
 {
-	if (q%2==1) {
-		return q*hexh+Math.floor(c / 2)
-	} else {
-		return q*hexh+(Math.floor((c-1) / 2))
-	}
-}
-
-
-function get_adjacent_hexes(h){
 	let hexes = []
-	let coord = hex_to_coordinates(h)
-	hexes[0] = h
-	hexes[1] = coordinates_to_hex(coord.q,coord.r-2)
-	hexes[2] = coordinates_to_hex(coord.q+1,coord.r-1)
-	hexes[3] = coordinates_to_hex(coord.q+1,coord.r+2)
-	hexes[4] = coordinates_to_hex(coord.q,coord.r+2)
-	hexes[5] = coordinates_to_hex(coord.q-1,coord.r+1)
-	hexes[6] = coordinates_to_hex(coord.q-1,coord.r-1)
-	console.log(h + "->" + hexes)
-	return hexes
-}
-
-//Получаем все гексы на дистации dist от гекса hex
-function get_hexes_from_distanse(hex, dist){
-	let hexes = []
-
-	for (let h = 0; h <=MAP; h++) {
-		let coord_h = hex_to_coordinates(h)
-		let coord_hex = hex_to_coordinates(hex)
-
-		let Q = coord_h.q - coord_hex.q
-		let R = coord_h.r - coord_hex.r
-		let S = coord_h.s - coord_hex.s
-
-		let conditionQ = Q >= -dist && Q <= dist 
-		let conditionR = R >= -dist && R <= dist
-		let conditionS = S >= -dist && S <= dist
-
-		if (conditionQ && conditionR && conditionS) {
-			console.log('---------')		
-			console.log('hex '+hex+'->'+coord_hex.q+','+coord_hex.r+','+coord_hex.s)				
-			console.log("h "+h+'->'+coord_h.q+','+coord_h.r +','+coord_h.s)			
-			console.log("h-hex ->"+Q+','+R+','+S)
-
-
+	for (let h = 0; h < mapsize; h++) {
+		if (calc_distance(hex,h)<=1)
+		{
 			hexes.push(h)
 		}
-}
+	}
 	return hexes
-	
 }
+
 
 ///UNIT STATE 
 
@@ -411,19 +317,6 @@ function current_scenario() {
 	return SCENARIOS[game.scenario]
 }
 
-// === PLAYER TURN ===
-
-/*
-Каждый ход начинают немцы. 
-Если ход заканчивают немцы, то свой ход начинают союзники. 
-Если ход заканчивают союзники, то GT меняется на +1.
-
-Каждый ход 4 фазы
-Каждая делится на шаги. 
-Активный игрок является атакующим
-Пассивный обороняющимся.
-
-*/
 
 //==PLAYER TURN====
 function goto_player_turn() {
@@ -607,13 +500,12 @@ prompt() {
 
 		if (game.selected.length == 1) {
 			let hex = unit_hex(game.selected[0])				
-			for (let h of get_adjacent_hexes(hex)) 
+			for (let h of get_adjacents(hex)) 
 				{
 					gen_action_hex(h)
 				}
 				
 		}
-
 		gen_action('end_movement_phase_step_2')
 		},
 		unit(u) {
