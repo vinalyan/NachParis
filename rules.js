@@ -3,6 +3,7 @@
 var states = {}
 var game = null
 var view = null
+var timeout = 0
 
 const GERMAN = 'German'
 const ALLIED = 'Allied'
@@ -15,8 +16,9 @@ const max = Math.max
 const abs = Math.abs
 
 
-var timeout = 0
-
+const {
+	start_hexes, hexes_terrain, units_max_mf
+} = require("./data.js")
 
 
 // === STATE CACHES ===
@@ -58,6 +60,33 @@ function calc_distance(a, b) {
 	let hex_a = hex_to_coordinates(a)
 	let hex_b = hex_to_coordinates(b)
 	return max(abs(hex_b.q-hex_a.q), abs(hex_b.r-hex_a.r), abs(hex_b.s-hex_a.s))
+}
+
+
+function active_adjacents_for_move(hex, mf)
+{	
+	let hexes = get_adjacents(hex)
+
+	hexes.forEach(
+		function(h) {
+			if(get_mf_cos[h] <= mf)
+			{		
+				view.actions.push(h)
+			}
+	})
+
+}
+
+function get_mf_cos(hex_id){
+	switch(hexes_terrain[hex_id]) {
+		case 'Clear':
+			return 10
+		case 'Broken':
+			return 12
+		default:
+			return 10
+	  }
+	
 }
 
 function get_adjacents(hex)
@@ -305,7 +334,7 @@ function setup() {
 	game.phasing = GERMAN
 	set_active_player()
 	log_h1(game.scenario)
-	let start_hexes = [30,37,37,37,37,37,37,37,37,37]
+
 	for (let u = 0; u < start_hexes.length; ++u)
 		{  
 			set_unit_hex(u, start_hexes[u])
