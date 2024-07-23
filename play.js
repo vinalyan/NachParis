@@ -56,32 +56,7 @@ function is_hex_selected(hex) {
 	return false
 }
 
-//TODO выпилить это штука тут нужна для дебага
 
-/*function hex_to_coordinates(h){
-	let q = Math.floor(h / hexh)
-	let r
-	if (Math.floor(h / hexh)%2==1) {
-		r = h% hexh*2
-	} else {
-		r = h % hexh*2 +1
-	}
-	let s = 0-q-r
-	return {q,r,s}
-}*/
-
-function hex_to_coordinates(h){
-	let q = Math.floor(h / hexh)
-	let r = h% hexh
-	let s = 0-q-r
-	return {q,r,s}
-}
-
-function calc_distance(a, b) {
-	let ax = a % hexh, ay = (a / hexh)|0, az = -ax - ay
-	let bx = b % hexh, by = (b / hexh)|0, bz = -bx - by
-	return max(abs(bx-ax), abs(by-ay))
-}
 
 // количество вертрикальных гексов
 const hexh = 8
@@ -301,8 +276,7 @@ function on_focus_unit(evt) {
 
 function on_focus_hex(evt) {
 	let hex = evt.target.hex
-    let text = ui.hexes[hex].hex +'->'+ hex_to_coordinates(hex).q + ','+ hex_to_coordinates(hex).r+','+hex_to_coordinates(hex).s + 
-		'\nDist ' + calc_distance(hex,35)
+    let text = ui.hexes[hex].hex
 	document.getElementById("status").textContent = text
 
 }

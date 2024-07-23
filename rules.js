@@ -77,17 +77,6 @@ function active_adjacents_for_move(hex, mf)
 
 }
 
-function get_mf_cos(hex_id){
-	switch(hexes_terrain[hex_id]) {
-		case 'Clear':
-			return 10
-		case 'Broken':
-			return 12
-		default:
-			return 10
-	  }
-	
-}
 
 function get_adjacents(hex)
 {
@@ -101,6 +90,17 @@ function get_adjacents(hex)
 	return hexes
 }
 
+function get_mf_cos(hex_id){
+	switch(hexes_terrain[hex_id]) {
+		case 'Clear':
+			return 10
+		case 'Broken':
+			return 12
+		default:
+			return 10
+	  }
+	
+}
 
 ///UNIT STATE 
 
@@ -135,7 +135,7 @@ function set_active_player() {
 	clear_undo()
 	if (game.active !== game.phasing) {
 		game.active = game.phasing
-//		update_aliases()
+		update_aliases()
 	}
 }
 
