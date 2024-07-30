@@ -15,7 +15,6 @@ const mapsize = hexw*hexh
 const max = Math.max
 const abs = Math.abs
 
-
 const {
 	start_hexes, hexes_terrain, units_max_mf
 } = require("./data.js")
@@ -69,9 +68,9 @@ function active_adjacents_for_move(hex, mf)
 
 	hexes.forEach(
 		function(h) {
-			if(get_mf_cos[h] <= mf)
+			if(get_mf_cost(h) <= mf)
 			{		
-				view.actions.push(h)
+				gen_action_hex(h)
 			}
 	})
 
@@ -84,13 +83,13 @@ function get_adjacents(hex)
 	for (let h = 0; h < mapsize; h++) {
 		if (calc_distance(hex,h)<=1)
 		{
-			hexes.push(h)
+			set_add(hexes,h)
 		}
 	}
 	return hexes
 }
 
-function get_mf_cos(hex_id){
+function get_mf_cost(hex_id){
 	switch(hexes_terrain[hex_id]) {
 		case 'Clear':
 			return 10
@@ -195,10 +194,13 @@ exports.setup = function (seed, scenario, options) {
 		undo: [],
 		summary: null,
 		scenario: scenario,
+		selected: [],
+		selected_hexes: [],
 		gt_start: SCENARIOS[scenario].start,
 		gt_end: SCENARIOS[scenario].end,
 		gt_now: SCENARIOS[scenario].start,
 		units: new Array(unit_count).fill(0),
+		MF: 50,
 	})
     // TODO тут надо накрутить обработку сценариев. 
 	setup()
@@ -215,6 +217,9 @@ exports.view = function(state, current) {
 		start: scenario.start,
 		end: scenario.end,
 		units: game.units,
+		selected_hexes : game.selected_hexes,
+		selected: game.selected,
+
 	} 
 
 	if (current === game.active)
@@ -511,60 +516,70 @@ states.movement_phase_step_2 = {
 	inactive: "Movemen phase",
 
 prompt() {
-		view.prompt = `Выберете доступное действие`
-//		movement()
-//		unit_arrivals()
-//		facing_unit()
-//		specific_structures_destruction()
-//		railroad_network_delimitation()
-//		split_units()
-//		recombine_units()
+		view.prompt = `Можете подвигать свои отряды`
 
 	//TODO тут добавляем доступные юниты. 
 		for (let u = 0; u < unit_count; ++u)
 		{
 			gen_action_unit(u)
 		}
-	// TODO тут я добавил гексы. Но надо как-то изящнее
 
-		if (game.selected.length == 1) {
-			let hex = unit_hex(game.selected[0])				
-			for (let h of get_adjacents(hex)) 
-				{
-					gen_action_hex(h)
-				}
-				
-		}
 		gen_action('end_movement_phase_step_2')
 		},
 		unit(u) {
 			set_toggle(game.selected, u)
-		},
-		hex(to) {
-			let list = game.selected
-			game.selected = []
-			push_undo()
-			game.summary[to] = (game.summary[to] | 0) + list.length
-			for (let who of list)
-			{
-				let start_hex = unit_hex(who)
-				set_unit_hex(who, to)
-				if (start_hex != unit_hex(who))
-					log(`${who} moved\nfrom #${start_hex}\nto #${unit_hex(who)}.`)
+			if (game.selected.length == 1) {
+				game.state = "movement_unit"
+				set_add(game.selected_hexes,unit_hex(u))
 			}
 		},
-		
-
 		end_movement_phase_step_2()
 		{
 			combat_phase()
 		},
 }
 
-function movement()
-{
-	log_h4('Дико подвигались юниты')
+states.movement_unit = {
+	inactive: "Movemen phase",
+	prompt(){
+		view.prompt = `Отряд ${game.selected[0]} MF = ${game.MF}`
+		gen_action_unit(game.selected[0])
+		//берем все возможные соседние гексы и активируем их
+
+		//let hex = view.selected_hexes[view.selected_hexes.length - 1]
+		//console.log( `hex = ${hex}`)
+
+		active_adjacents_for_move(view.selected_hexes[view.selected_hexes.length-1], 10)
+		console.log(`view.selected - ${view.selected_hexes}`)
+		console.log(`view.selected.length-1] - ${view.selected_hexes[view.selected_hexes.length-1]}`)
+	},
+	unit(u) {
+		set_toggle(game.selected, u)
+		if (game.selected.length == 0) {
+			set_clear(game.selected_hexes) 
+			game.state = "movement_phase_step_2"			
+		}
+	},
+	hex(h){
+		game.selected_hexes.push(h)
+		console.log( `hex = ${game.selected_hexes}`)
+
+		/*push_undo()
+		set_unit_hex(game.selected[0],h)
+		game.MF = game.MF - get_mf_cost(h)
+		console.log( `MF = ${game.MF}`)*/
+	}
 }
+
+
+
+
+function start_new_path(hex){
+
+}
+
+
+
 
 function unit_arrivals()
 {
@@ -841,37 +856,39 @@ function pop_undo() {
 }
 
 function set_add(set, item) {
-	let a = 0
-	let b = set.length - 1
-	while (a <= b) {
-		let m = (a + b) >> 1
-		let x = set[m]
-		if (item < x)
-			b = m - 1
-		else if (item > x)
-			a = m + 1
-		else
-			return
+	if(set_has(set, item)===false){
+		set.push(item)
 	}
-	array_insert(set, a, item)
+	else
+		return set
 }
 
 function set_toggle(set, item) {
-	let a = 0
-	let b = set.length - 1
-	while (a <= b) {
-		let m = (a + b) >> 1
-		let x = set[m]
-		if (item < x)
-			b = m - 1
-		else if (item > x)
-			a = m + 1
-		else {
-			array_remove(set, m)
-			return
-		}
+	if(set_has(set, item)===false)
+	{
+		set_add(set, item)
 	}
-	array_insert(set, a, item)
+	else
+	{
+		set_delete(set, item)
+	}
+	return set
 }
 
+function set_delete(set, item) {
+		set.splice(set_has(set, item), 1)
+		return set
+}
 
+function set_clear(set) {
+	set.length = 0
+}
+
+function set_has(set, item) {
+    for (let i = 0; i < set.length; i++) {
+        if (set[i] === item) {
+            return i; // Возвращаем индекс элемента, если он найден
+        }
+    }
+    return false; // Возвращаем false, если элемент не найден
+}
