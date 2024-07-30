@@ -24,7 +24,7 @@ let ui = {
 
 // СОСТОЯНИЕ ОТРЯДОВ 
 //Гекс отряда 
-const UNIT_HEX_SHIFT = 0
+const UNIT_HEX_SHIFT = 7
 const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
 
 function unit_hex(u) {

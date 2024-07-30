@@ -64,7 +64,9 @@ function calc_distance(a, b) {
 
 function active_adjacents_for_move(hex, mf)
 {	
+	gen_action_hex(hex)
 	let hexes = get_adjacents(hex)
+	//TODO тут добавить различные проверки
 
 	hexes.forEach(
 		function(h) {
@@ -103,17 +105,31 @@ function get_mf_cost(hex_id){
 
 ///UNIT STATE 
 
-const UNIT_HEX_SHIFT = 0
+const UNIT_HEX_SHIFT = 7
 const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
+
+const UNIT_MF_SHIFT = 0
+const UNIT_MF_MASK = 127 << UNIT_MF_SHIFT
 
 function unit_hex(u) {
 	return (game.units[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
 }
 
 function set_unit_hex(u, x) {
-	invalidate_caches()
+	//invalidate_caches()
 	game.units[u] = (game.units[u] & ~UNIT_HEX_MASK) | (x << UNIT_HEX_SHIFT)
 }
+
+function unit_mf(u) {
+	return (game.units[u] & UNIT_MF_MASK) >> UNIT_MF_SHIFT
+}
+
+function set_unit_mf(u, x) {
+	//invalidate_caches()
+	game.units[u] = (game.units[u] & ~UNIT_MF_MASK) | (x << UNIT_MF_SHIFT)
+}
+
+
 
 
 function logbr() {
@@ -200,7 +216,6 @@ exports.setup = function (seed, scenario, options) {
 		gt_end: SCENARIOS[scenario].end,
 		gt_now: SCENARIOS[scenario].start,
 		units: new Array(unit_count).fill(0),
-		MF: 50,
 	})
     // TODO тут надо накрутить обработку сценариев. 
 	setup()
@@ -343,6 +358,7 @@ function setup() {
 	for (let u = 0; u < start_hexes.length; ++u)
 		{  
 			set_unit_hex(u, start_hexes[u])
+			set_unit_mf(u,units_max_mf[u])
 		}
 	goto_player_turn()
 }
@@ -542,16 +558,9 @@ prompt() {
 states.movement_unit = {
 	inactive: "Movemen phase",
 	prompt(){
-		view.prompt = `Отряд ${game.selected[0]} MF = ${game.MF}`
+		view.prompt = `Отряд ${game.selected[0]} MF = ${unit_mf(game.selected[0])}`
 		gen_action_unit(game.selected[0])
-		//берем все возможные соседние гексы и активируем их
-
-		//let hex = view.selected_hexes[view.selected_hexes.length - 1]
-		//console.log( `hex = ${hex}`)
-
-		active_adjacents_for_move(view.selected_hexes[view.selected_hexes.length-1], 10)
-		console.log(`view.selected - ${view.selected_hexes}`)
-		console.log(`view.selected.length-1] - ${view.selected_hexes[view.selected_hexes.length-1]}`)
+		active_adjacents_for_move(view.selected_hexes[view.selected_hexes.length-1], unit_mf(game.selected[0]))
 	},
 	unit(u) {
 		set_toggle(game.selected, u)
@@ -560,11 +569,28 @@ states.movement_unit = {
 			game.state = "movement_phase_step_2"			
 		}
 	},
-	hex(h){
-		game.selected_hexes.push(h)
-		console.log( `hex = ${game.selected_hexes}`)
+	hex(h){		
+		// Проверяем наличие элемента hex в массиве path
+		if (set_has(game.selected_hexes,h)!=false)
+		{
+			// Если элемент есть и он последний
+			if(set_has(game.selected_hexes,h) == game.selected_hexes.length - 1){
+				set_unit_hex(game.selected[0],h)
+			}
+			else {
+				pop_undo()
+			}
+		}
+		else{
+			push_undo()
+			set_add(game.selected_hexes,h)
+			let mf = unit_mf(game.selected[0])
+			mf = mf - get_mf_cost(h)
+			console.log(`mf ${mf}`)
+			set_unit_mf(game.selected[0], mf)
+		}
 
-		/*push_undo()
+		/*
 		set_unit_hex(game.selected[0],h)
 		game.MF = game.MF - get_mf_cost(h)
 		console.log( `MF = ${game.MF}`)*/
@@ -785,20 +811,6 @@ function remove_EXM_marker()
 
 //=== COMMON LIBRARY ===
 
-// insert item at index (faster than splice)
-function array_insert(array, index, item) {
-	for (let i = array.length; i > index; --i)
-		array[i] = array[i - 1]
-	array[index] = item
-
-}
-
-function array_remove(array, index) {
-	let n = array.length
-	for (let i = index + 1; i < n; ++i)
-		array[i - 1] = array[i]
-	array.length = n - 1
-}
 
 function object_copy(original) {
 	if (Array.isArray(original)) {
