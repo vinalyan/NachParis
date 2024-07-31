@@ -24,11 +24,19 @@ let ui = {
 
 // СОСТОЯНИЕ ОТРЯДОВ 
 //Гекс отряда 
-const UNIT_HEX_SHIFT = 7
+
+const UNIT_FACING_SHIFT = 7
+const UNIT_FACING_MASK = 7 << UNIT_FACING_SHIFT
+
+const UNIT_HEX_SHIFT = 10
 const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
 
 function unit_hex(u) {
 	return (view.units[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
+}
+
+function unit_facing(u) {
+	return (view.units[u] & UNIT_FACING_MASK) >> UNIT_FACING_SHIFT
 }
 
 function is_unit_action(unit) {
@@ -175,17 +183,17 @@ function update_map() {
             let hex = unit_hex(u)
             let e = ui.units[u]
 		    if (!ui.units_holder.contains(e))
-            ui.units_holder.appendChild(e)  
+            ui.units_holder.appendChild(e) 
+			e.classList.remove(`f0`, `f1`, `f2`, `f3`, `f4`, `f5`)
+			e.classList.add(`f${unit_facing(u)}`)
 			if(hex){
 				stack_list[hex].push(u)
 				e.stack = stack_list[hex]
 				layout_stack(stack_list[hex], hex, ui.hex_x[hex],ui.hex_y[hex],60, -1)
 			}
+			//TODO тут вращение
         }
 	for (let hex = 0; hex < stack_list.length; ++hex) {
-		let start_x = ui.hex_x[hex]
-		let start_y = ui.hex_y[hex]
-		let wrap = 6
 		if (ui.hexes[hex]) {
 			ui.hexes[hex].classList.toggle("action", is_any_hex_action(hex))
 			ui.hexes[hex].classList.toggle("selected", is_hex_selected(hex))

@@ -79,6 +79,16 @@ function active_adjacents_for_move(hex, mf)
 }
 
 
+function acive_adjacents(hex)
+{
+	let hexes = get_adjacents(hex)
+	hexes.forEach(
+		function(h) {
+				gen_action_hex(h)
+	})
+	
+}
+
 function get_adjacents(hex)
 {
 	let hexes = []
@@ -105,11 +115,16 @@ function get_mf_cost(hex_id){
 
 ///UNIT STATE 
 
-const UNIT_HEX_SHIFT = 7
-const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
+
 
 const UNIT_MF_SHIFT = 0
 const UNIT_MF_MASK = 127 << UNIT_MF_SHIFT
+
+const UNIT_FACING_SHIFT = 7
+const UNIT_FACING_MASK = 7 << UNIT_FACING_SHIFT
+
+const UNIT_HEX_SHIFT = 10
+const UNIT_HEX_MASK = 255 << UNIT_HEX_SHIFT
 
 function unit_hex(u) {
 	return (game.units[u] & UNIT_HEX_MASK) >> UNIT_HEX_SHIFT
@@ -129,6 +144,14 @@ function set_unit_mf(u, x) {
 	game.units[u] = (game.units[u] & ~UNIT_MF_MASK) | (x << UNIT_MF_SHIFT)
 }
 
+function unit_facing(u) {
+	return (game.units[u] & UNIT_FACING_MASK) >> UNIT_FACING_SHIFT
+}
+
+function set_unit_facing(u, x) {
+	//invalidate_caches()
+	game.units[u] = (game.units[u] & ~UNIT_FACING_MASK) | (x << UNIT_FACING_SHIFT)
+}
 
 
 
@@ -546,7 +569,6 @@ prompt() {
 			set_toggle(game.selected, u)
 			if (game.selected.length == 1) {
 				game.state = "movement_unit"
-				set_add(game.selected_hexes,unit_hex(u))
 			}
 		},
 		end_movement_phase_step_2()
@@ -560,61 +582,64 @@ states.movement_unit = {
 	prompt(){
 		view.prompt = `Отряд ${game.selected[0]} MF = ${unit_mf(game.selected[0])}`
 		gen_action_unit(game.selected[0])
-		active_adjacents_for_move(view.selected_hexes[view.selected_hexes.length-1], unit_mf(game.selected[0]))
+		active_adjacents_for_move(unit_hex(game.selected[0]), unit_mf(game.selected[0]))
 	},
 	unit(u) {
 		set_toggle(game.selected, u)
 		if (game.selected.length == 0) {
-			set_clear(game.selected_hexes) 
 			game.state = "movement_phase_step_2"			
 		}
 	},
 	hex(h){		
-		// Проверяем наличие элемента hex в массиве path
-		if (set_has(game.selected_hexes,h)!=false)
+		if (h === unit_hex(game.selected[0]))
 		{
-			// Если элемент есть и он последний
-			if(set_has(game.selected_hexes,h) == game.selected_hexes.length - 1){
-				set_unit_hex(game.selected[0],h)
-			}
-			else {
-				pop_undo()
-			}
+			game.state = "end_movement_unit"
 		}
 		else{
 			push_undo()
-			set_add(game.selected_hexes,h)
+			set_unit_hex(game.selected[0],h)
 			let mf = unit_mf(game.selected[0])
 			mf = mf - get_mf_cost(h)
-			console.log(`mf ${mf}`)
 			set_unit_mf(game.selected[0], mf)
 		}
-
-		/*
-		set_unit_hex(game.selected[0],h)
-		game.MF = game.MF - get_mf_cost(h)
-		console.log( `MF = ${game.MF}`)*/
 	}
 }
 
-
-
-
-function start_new_path(hex){
-
+states.end_movement_unit = {
+	inactive: "Movemen phase",
+	prompt(){
+		view.prompt = "Выберете фронт отряда"
+		acive_adjacents(unit_hex(game.selected[0]))
+	},
+	hex(h)
+	{
+		set_unit_facing(game.selected[0],rotate_unit(game.selected[0], h))
+		set_clear(game.selected)
+		game.state = "movement_phase_step_2"
+	},
 }
-
-
 
 
 function unit_arrivals()
 {
 	log_h4('Отряды прибыли')
 }
+//TODO переименовать
+function rotate_unit(u, where) {
+    let coord = hex_to_coordinates(where);
+    let coord_unit_hex = hex_to_coordinates(unit_hex(u));
+    coord.q = coord.q - coord_unit_hex.q;
+    coord.r = coord.r - coord_unit_hex.r;
+    coord.s = coord.s - coord_unit_hex.s;
 
-function facing_unit()
-{
-	log_h4('Отряды покрутили жалами')
+    if (coord.q === 1 && coord.r === -1 && coord.s === 0) return 1;
+    if (coord.q === 1 && coord.r === 0 && coord.s === -1) return 2;
+    if (coord.q === 0 && coord.r === 1 && coord.s === -1) return 3;
+    if (coord.q === -1 && coord.r === 1 && coord.s === 0) return 4;
+    if (coord.q === -1 && coord.r === 0 && coord.s === 1) return 5;
+    if (coord.q === 0 && coord.r === -1 && coord.s === 1) return 6;
+    
+    return 0;
 }
 
 function specific_structures_destruction()

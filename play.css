@@ -93,12 +93,12 @@ header.your_turn { background-color: orange; }
 	box-shadow: 0 0 0 2px yellow;
 }
 
-.unit.u0 { transform: rotate(0deg); }
-.unit.u1 { transform: rotate(60deg); }
-.unit.u2 { transform: rotate(120deg); }
-.unit.u3 { transform: rotate(180deg); }
-.unit.u4 { transform: rotate(240deg); }
-.unit.u5 { transform: rotate(300deg); }
+.unit.f0 { transform: rotate(0deg); }
+.unit.f1 { transform: rotate(60deg); }
+.unit.f2 { transform: rotate(120deg); }
+.unit.f3 { transform: rotate(180deg); }
+.unit.f4 { transform: rotate(240deg); }
+.unit.f5 { transform: rotate(300deg); }
 
 
 
