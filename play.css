@@ -55,11 +55,11 @@ header.your_turn { background-color: orange; }
 
 .unit{
 	background-image: url(units/G_7.ID_S4.png);
-	background-size: 75px 75px;
+	background-size: 77px 77px;
 	height: 100%;
 	width: 100%;
-	width: 75px;
-	height: 75px;
+	width: 77px;
+	height: 77px;
 	z-index: 100;
 }
 
@@ -69,8 +69,8 @@ header.your_turn { background-color: orange; }
 	box-shadow: 0 0 4px 3px hsl(345, 20%, 20%);
 }
 
-.unit.S4{
-	background-image: url(units/G_7.ID_S4.png);
+.unit.u1{
+	background-image: url(units/unit.svg);
 }
 
 .unit.S1{
